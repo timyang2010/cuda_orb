@@ -2,11 +2,11 @@
 #define TILE_RADIUS FAST_TILE/2
 #include "FAST.cuh"
 #include "device_launch_parameters.h"
-__global__ void FAST(unsigned char* inputImage, unsigned char* cornerMap, const int threshold, const int width, const  int height)
+__global__ void FAST(unsigned char* __restrict__ inputImage, unsigned char* __restrict__ cornerMap, const int threshold, const int width, const  int height)
 {
-	__shared__ unsigned char tile[FAST_TILE * 2][FAST_TILE * 2];
 	const int offsetX[27] = { 3, 3, 2, 1, 0, -1, -2, -3, -3, -3, -2, -1, 0, 1, 2, 3, 3, 3, 2, 1, 0, -1, -2, -3, -3, -3, -2 };
 	const int offsetY[27] = { 0, 1, 2, 3, 3, 3, 2, 1, 0, -1, -2, -3, -3, -3, -2, -1, 0, 1, 2, 3, 3, 3, 2, 1, 0, -1, -2 };
+	__shared__ int tile[FAST_TILE * 2 + 1][FAST_TILE * 2 + 1];
 	int hblocks = width / FAST_TILE;
 	int vblocks = height / FAST_TILE;
 	int sourceX = blockIdx.x*blockDim.x + threadIdx.x;
@@ -27,23 +27,20 @@ __global__ void FAST(unsigned char* inputImage, unsigned char* cornerMap, const 
 			}
 		__syncthreads();
 
+
+		//FAST Algorithm
 		int highCount = 0, lowCount = 0;
 		int cX = threadIdx.x + TILE_RADIUS, cY = threadIdx.y + TILE_RADIUS;
-		unsigned char center = tile[cX][cY];
-		//FAST Algorithm
-
-		unsigned char t_low = center - threshold;
-		unsigned char t_high = center + threshold;
-
-		bool ir_high = !(center > 255 - threshold);
-		bool ir_low = !(center < threshold);
+		int center = tile[cX][cY];
+		int t_low = (center < threshold) ? 0 : center - threshold;
+		int t_high = (center > 255 - threshold) ? 255 : center + threshold;
 		bool isCorner = false;
 
 		for (int i = 0; i < 27; ++i)
 		{
 			int x = offsetX[i] + cX, y = offsetY[i] + cY;
-			highCount = (tile[x][y] > t_high && ir_high) ? highCount + 1 : 0;
-			lowCount = (tile[x][y] < t_low && ir_low) ? lowCount + 1 : 0;
+			highCount = (tile[x][y] > t_high) ? highCount + 1 : 0;
+			lowCount = (tile[x][y] < t_low) ? lowCount + 1 : 0;
 			if ((highCount >= 9 && highCount < 13) || (lowCount >= 9 && lowCount < 13))
 			{
 				isCorner = true;
@@ -56,3 +53,4 @@ __global__ void FAST(unsigned char* inputImage, unsigned char* cornerMap, const 
 		cornerMap[source] = isCorner ? 255 : 0;
 	}
 }
+

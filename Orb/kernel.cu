@@ -17,19 +17,22 @@ int main(int argc,char** argv)
 {
 	Profiler profiler;
 	VideoCapture cap; 	
-	if (argc < 2)
+	if (argc<2)
 	{
-		cap.open(1);
+		cap.open(0);
 	}
 	else
 	{
-		cap.open("C:\\Users\\timya\\Videos\\Captures\\2.mp4");
+		cap.open(argv[1]);
 	}
 	if (!cap.isOpened())
 		return -1;
 
+	
 	Mat frame;
 	if (!cap.read(frame))return;
+		
+	
 	Mat grey = Mat(frame.rows, frame.cols, CV_8UC1);
 	Mat out = Mat(frame.rows, frame.cols, CV_8UC1);
 	
