@@ -174,14 +174,17 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   <ItemGroup>
     <CudaCompile Include="FAST.cu" />
     <CudaCompile Include="kernel.cu" />
+    <CudaCompile Include="Utility.cu" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BriefPattern.h" />
     <ClInclude Include="FAST.cuh" />
     <ClInclude Include="Memory.cuh" />
     <ClInclude Include="Profiler.cuh" />
+    <ClInclude Include="Utility.cuh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

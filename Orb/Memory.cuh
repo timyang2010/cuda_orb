@@ -14,7 +14,7 @@ public:
 	{
 		cudaMalloc(&ptr, _size * sizeof(T));
 		size = _size * sizeof(T);
-		cudaMemset(ptr, value, size);
+		cudaMemset(ptr, value, sizeof(T));
 	}
 	~cuArray()
 	{
@@ -22,7 +22,7 @@ public:
 	}
 	void clear()
 	{
-		cudaMemset(ptr, 0, size);
+		cudaMemset(ptr, 0, size*sizeof(T));
 	}
 	operator T* () const
 	{
@@ -34,12 +34,23 @@ public:
 	}
 	void upload(T* source)
 	{
-		cudaMemcpy(ptr, source, size, cudaMemcpyHostToDevice);
+		cudaMemcpy(ptr, source, size * sizeof(T), cudaMemcpyHostToDevice);
 	}
 	void download(T* dest)
 	{
-		cudaMemcpy(dest, ptr, size, cudaMemcpyDeviceToHost);
+		cudaMemcpy(dest, ptr, size*sizeof(T), cudaMemcpyDeviceToHost);
 	}
+	void upload(T* source, size_t length)
+	{
+		if(size>length)
+			cudaMemcpy(ptr, source, length * sizeof(T), cudaMemcpyHostToDevice);
+	}
+	void download(T* dest, size_t length)
+	{
+		if (size>length)
+			cudaMemcpy(dest, ptr, length* sizeof(T), cudaMemcpyDeviceToHost);
+	}
+
 protected:
 	T* ptr;
 	int size;

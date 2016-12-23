@@ -3,6 +3,7 @@
   <ItemGroup>
     <CudaCompile Include="kernel.cu" />
     <CudaCompile Include="FAST.cu" />
+    <CudaCompile Include="Utility.cu" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -11,5 +12,7 @@
     <ClInclude Include="Profiler.cuh" />
     <ClInclude Include="Memory.cuh" />
     <ClInclude Include="FAST.cuh" />
+    <ClInclude Include="Utility.cuh" />
+    <ClInclude Include="BriefPattern.h" />
   </ItemGroup>
 </Project>
