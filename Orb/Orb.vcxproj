@@ -180,7 +180,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BriefPattern.h" />
     <ClInclude Include="FAST.cuh" />
     <ClInclude Include="Memory.cuh" />
     <ClInclude Include="Profiler.cuh" />

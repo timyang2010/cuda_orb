@@ -13,6 +13,5 @@
     <ClInclude Include="Memory.cuh" />
     <ClInclude Include="FAST.cuh" />
     <ClInclude Include="Utility.cuh" />
-    <ClInclude Include="BriefPattern.h" />
   </ItemGroup>
 </Project>
