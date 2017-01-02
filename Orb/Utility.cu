@@ -48,16 +48,3 @@ __global__ void OrientFast(unsigned char* InputImage, uint4*  CornerMap, const i
 
 }
 
-__global__ void BRIEF(unsigned char* InputImage, uint4* __restrict__ CornerMap, uint4* Feature_Map, const int width, const int height, const int length)
-{
-	const int radius = 5;
-	int index = blockIdx.x*blockDim.x + threadIdx.x;
-
-	if (index < length)
-	{
-
-
-	}
-
-
-}

@@ -56,45 +56,86 @@ __global__ void FAST(unsigned char* __restrict__ inputImage, unsigned char* __re
 }
 
 
+#define tile 5
 
-
-__device__ void localElMul(float in1[5][5], float in2[5][5], float out[5][5])
+__device__ void localElMul(float in1[tile][tile], float in2[tile][tile], float out[tile][tile])
 {
-	for (int i = 0; i<5; ++i)
-		for (int j = 0; j < 5; ++j)
+	for (int i = 0; i<tile; ++i)
+		for (int j = 0; j < tile; ++j)
 		{
 			out[i][j] = in1[i][j] * in2[i][j];
 		}
 }
 
-__device__ void localConvolution(float roi[5][5], const float* k, int kdim, int roi_dim)
-{
-
-}
-
 
 __global__ void FAST_Refine(unsigned char* __restrict__ inputImage, uint4* __restrict__ cornerMap,const int count, const int width, const  int height)
 {
+	const float k = 0.06;
+	const float gk3[][3] = { {1,2,1},{2,4,2},{1,2,1} };
+	float roi[tile][tile];
+	float ix[tile][tile]; 
+	float  iy[tile][tile];
+	float  ixx[tile][tile];
+	float  iyy[tile][tile]; 
+	float  ixy[tile][tile];
 	int threadIndex = threadIdx.x + blockDim.x*blockIdx.x;
-	uint4 cvector = cornerMap[threadIndex];
-	
-
-	const float gk3[] = { 0.25,0.5,0.25 };
-	const int tile_size = 3;
-	float roi[5][5];
-	
-	int ptr = cvector.x + cvector.y*width;
-	for (int i = 0; i < 5; ++i)
+	if (threadIndex < count)
 	{
-		for (int j = 0; j < 5; ++j)
+		uint4 cvector = cornerMap[threadIndex];
+		if (cvector.x > 3 && cvector.x < width - 3 && cvector.y>3 && cvector.y < height - 3)
 		{
-			roi[i][j] = inputImage[ptr];
-			ptr += 1;
-		}
-		ptr += width - 5;
-	}
+			int ptr = cvector.x - (tile / 2) + (cvector.y - tile / 2)*width;
+			for (int i = 0; i < tile; ++i)
+			{
+				for (int j = 0; j < tile; ++j)
+				{
+					roi[i][j] = inputImage[ptr];
+					inputImage[ptr] = 0;
+					ptr += 1;
+				}
+				ptr += width - tile;
+			}
 
-	localConvolution(roi, gk3, 3, 5);
+			for (int i = 0; i < tile; ++i)
+			{
+				for (int j = 1; j < (tile - 2); ++j)
+				{
+					ix[i][j] = roi[i][j + 1] - roi[i][j - 1];
+					iy[j][i] = roi[j + 1][i] - roi[j - 1][i];
+				}
+			}
+			localElMul(ix, iy, ixy);
+			localElMul(ix, ix, ixx);
+			localElMul(iy, iy, iyy);
+
+			float sxx = 0, syy = 0, sxy = 0;
+			for (int i = 1; i <= 3; ++i)
+			{
+				for (int j = 1; j <= 3; ++j)
+				{
+					sxx += ixx[i][j] * gk3[i][j];
+					sxy += ixy[i][j] * gk3[i][j];
+					syy += iyy[i][j] * gk3[i][j];
+				}
+			}
+
+			sxx /= 16;
+			syy /= 16;
+			sxy /= 16;
+			float trace = sxx + sxy;
+			float trace2 = trace*trace;
+			float det = sxx*syy - sxy*sxy;
+			cornerMap[threadIndex].w = (det - trace2* k);
+		}
+		else
+		{
+			cornerMap[threadIndex].w = 0;
+		}
+	}	
+	
+	
+
+	
 }
 
 
