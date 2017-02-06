@@ -74,7 +74,7 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OPENCV)\include;C:\Users\timya\Documents\Visual Studio 2015\Projects\brief\brief;$(AF_PATH)\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OPENCV)\include;$(AF_PATH)\include;$(ISD)\include</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(OPENCV)\lib</LibraryPath>
     <ReferencePath>$(OPENCV)/x64/vc14/bin;$(ReferencePath)</ReferencePath>
   </PropertyGroup>
@@ -156,7 +156,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;opencv_world310.lib;afcuda.lib;brief.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(CudaToolkitLibDir);$(OPENCV)\x64\vc14\lib;$(AF_PATH)/lib;$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(CudaToolkitLibDir);$(OPENCV)\x64\vc14\lib;$(AF_PATH)/lib;$(ISD)\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
@@ -178,9 +178,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <CudaCompile Include="Utility.cu" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="FAST.cuh" />
     <ClInclude Include="Memory.cuh" />
     <ClInclude Include="Profiler.cuh" />
@@ -189,14 +186,5 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 8.0.targets" />
-    <Import Project="..\packages\opencvcuda-release.redist.3.1.0\build\native\opencvcuda-release.redist.targets" Condition="Exists('..\packages\opencvcuda-release.redist.3.1.0\build\native\opencvcuda-release.redist.targets')" />
-    <Import Project="..\packages\opencvcuda-release.3.1.0\build\native\opencvcuda-release.targets" Condition="Exists('..\packages\opencvcuda-release.3.1.0\build\native\opencvcuda-release.targets')" />
   </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\opencvcuda-release.redist.3.1.0\build\native\opencvcuda-release.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\opencvcuda-release.redist.3.1.0\build\native\opencvcuda-release.redist.targets'))" />
-    <Error Condition="!Exists('..\packages\opencvcuda-release.3.1.0\build\native\opencvcuda-release.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\opencvcuda-release.3.1.0\build\native\opencvcuda-release.targets'))" />
-  </Target>
 </Project>

@@ -6,9 +6,6 @@
     <CudaCompile Include="Utility.cu" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Profiler.cuh" />
     <ClInclude Include="Memory.cuh" />
     <ClInclude Include="FAST.cuh" />

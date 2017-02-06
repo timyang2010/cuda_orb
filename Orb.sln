@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Orb", "Orb\Orb.vcxproj", "{FC79BEBD-DBA2-4A71-B943-68AAAA142441}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "brief", "C:\Users\timya\Documents\Visual Studio 2015\Projects\brief\brief\brief.vcxproj", "{AE6A1918-844F-4AAD-91BD-848D3B091E92}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "brief", "..\..\..\..\Desktop\BRIEF\brief\brief.vcxproj", "{AE6A1918-844F-4AAD-91BD-848D3B091E92}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

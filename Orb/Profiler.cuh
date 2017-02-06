@@ -18,7 +18,6 @@ public:
 	}
 	long long Stop()
 	{
-
 		auto elapsed = std::chrono::high_resolution_clock::now() - time;
 		long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
 		return microseconds;
