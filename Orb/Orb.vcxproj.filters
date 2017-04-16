@@ -2,13 +2,37 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <CudaCompile Include="kernel.cu" />
-    <CudaCompile Include="FAST.cu" />
     <CudaCompile Include="Utility.cu" />
+    <CudaCompile Include="FAST.cu">
+      <Filter>Fast</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Profiler.cuh" />
     <ClInclude Include="Memory.cuh" />
-    <ClInclude Include="FAST.cuh" />
     <ClInclude Include="Utility.cuh" />
+    <ClInclude Include="FAST.cuh">
+      <Filter>Fast</Filter>
+    </ClInclude>
+    <ClInclude Include="brief.h">
+      <Filter>BRIEF</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Fast">
+      <UniqueIdentifier>{4c17dac6-99b4-4bea-9aa3-0772bcafb7be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BRIEF">
+      <UniqueIdentifier>{297f1b5e-dda0-4fe4-96b7-bdcebf160541}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BRIEF.cpp">
+      <Filter>BRIEF</Filter>
+    </ClCompile>
+    <ClCompile Include="rBRIEF.cpp">
+      <Filter>BRIEF</Filter>
+    </ClCompile>
+    <ClCompile Include="train.cpp" />
   </ItemGroup>
 </Project>

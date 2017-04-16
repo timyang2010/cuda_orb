@@ -56,4 +56,14 @@ protected:
 	int size;
 };
 
+template<typename T> T** convert2D(T* in, unsigned int width, unsigned int height)
+{
+	T** a = new T*[height];
+	for (int i = 0, j = 0; i < height; ++i)
+	{
+		a[i] = &(in[j]);
+		j += width;
+	}
+	return a;
+}
 #endif

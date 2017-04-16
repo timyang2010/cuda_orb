@@ -34,7 +34,7 @@ __global__ void FAST(unsigned char* __restrict__ inputImage, unsigned char* __re
 		int t_high = (center > 255 - threshold) ? 255 : center + threshold;
 		bool isCorner = false;
 		bool CornerType = false;
-		for (int i = 0; i < 27; ++i)
+		for (int i = 26; i >=0; --i)
 		{
 			int x = offsetX[i] + cX, y = offsetY[i] + cY;
 			highCount = (tile[x][y] > t_high) ? highCount + 1 : 0;
@@ -131,12 +131,27 @@ __global__ void FAST_Refine(unsigned char* __restrict__ inputImage, uint4* __res
 		{
 			cornerMap[threadIndex].w = 0;
 		}
-	}	
-	
-	
-
-	
+	}		
 }
+#include <math.h>
+__global__ void ComputeOrientation(unsigned char* __restrict__ inputImage, uint4* __restrict__ cornerMap, const int count, const int width, const  int height)
+{
+	int idx = threadIdx.x + blockDim.x*blockIdx.x;
+	__shared__ float sumx[32];
+	__shared__ float sumy[32];
+	sumx[threadIdx.x] = 0;
+	sumy[threadIdx.x] = 0;
+	uint4 p = cornerMap[idx];
+	int x = p.x,y=p.y;
+	int c = x + y*width;
 
-
-
+	for (int i = -3, wh = -3 * width; i <= 3; i += 1, wh += width)
+	{
+		for (int j = -3; j <= 3; ++j)
+		{
+			sumx[threadIdx.x] += inputImage[c + wh + j]*i;
+			sumy[threadIdx.x] += inputImage[c + wh + j]*j;
+		}
+	}
+	cornerMap[idx].z = atanf(sumy[threadIdx.x] / sumx[threadIdx.x])*180.0f/3.14159f + 360;
+}

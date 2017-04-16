@@ -5,8 +5,6 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Orb", "Orb\Orb.vcxproj", "{FC79BEBD-DBA2-4A71-B943-68AAAA142441}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "brief", "..\..\..\..\Desktop\BRIEF\brief\brief.vcxproj", "{AE6A1918-844F-4AAD-91BD-848D3B091E92}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -23,14 +21,6 @@ Global
 		{FC79BEBD-DBA2-4A71-B943-68AAAA142441}.Release|x64.Build.0 = Release|x64
 		{FC79BEBD-DBA2-4A71-B943-68AAAA142441}.Release|x86.ActiveCfg = Release|Win32
 		{FC79BEBD-DBA2-4A71-B943-68AAAA142441}.Release|x86.Build.0 = Release|Win32
-		{AE6A1918-844F-4AAD-91BD-848D3B091E92}.Debug|x64.ActiveCfg = Debug|x64
-		{AE6A1918-844F-4AAD-91BD-848D3B091E92}.Debug|x64.Build.0 = Debug|x64
-		{AE6A1918-844F-4AAD-91BD-848D3B091E92}.Debug|x86.ActiveCfg = Debug|Win32
-		{AE6A1918-844F-4AAD-91BD-848D3B091E92}.Debug|x86.Build.0 = Debug|Win32
-		{AE6A1918-844F-4AAD-91BD-848D3B091E92}.Release|x64.ActiveCfg = Release|x64
-		{AE6A1918-844F-4AAD-91BD-848D3B091E92}.Release|x64.Build.0 = Release|x64
-		{AE6A1918-844F-4AAD-91BD-848D3B091E92}.Release|x86.ActiveCfg = Release|Win32
-		{AE6A1918-844F-4AAD-91BD-848D3B091E92}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
