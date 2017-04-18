@@ -23,6 +23,24 @@ using namespace std;
 #define Harris_Threshold 50000000
 #define FAST_Corner_Limit 500000
 
+void AFFAST(Mat& grey, vector<Point2d>& poi)
+{
+	af::array afa = transpose(af::array(grey.cols, grey.rows, grey.data, af::source::afHost));
+	af::features fast_features = af::fast(afa, 50, 9, 1, 0.05f);
+	int N = fast_features.getNumFeatures();
+	af::array x_pos = fast_features.getX();
+	af::array y_pos = fast_features.getY();
+	af::array scores = fast_features.getScore();
+	float* x = x_pos.host<float>();
+	float* y = y_pos.host<float>();
+	//float* x = x_pos.host<float>();
+	for (int i = 0; i < N; ++i)
+	{
+		poi.push_back(Point2d(x[i], y[i]));
+		//circle(frame, Point(x[i], y[i]), 2, Scalar(255, 0, 255), 1);
+	}
+
+}
 
 int main(int argc,char** argv)
 {
