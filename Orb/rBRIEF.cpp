@@ -73,7 +73,7 @@ pair<int*, int*> rBRIEF::operator [](int i) const
 {
 	return pair<int*, int*>(lutx[i], luty[i]);
 }
-BRIEF::Features rBRIEF::extractFeature(unsigned char* image, std::vector<cv::Point2d>& positions, const int width, const int height) const
+BRIEF::Features rBRIEF::extractFeature(unsigned char** image, std::vector<cv::Point2d>& positions, const int width, const int height) const
 {
 	Features features = Features();
 	int size = width*height;
@@ -99,7 +99,7 @@ BRIEF::Features rBRIEF::extractFeature(unsigned char* image, std::vector<cv::Poi
 	return features;
 }
 
-BRIEF::Features rBRIEF::extractFeature(unsigned char* image, std::vector<cv::Point2d>& positions, vector<float>& angles, const int width, const int height) const
+BRIEF::Features rBRIEF::extractFeature(unsigned char** image, std::vector<cv::Point2d>& positions, vector<float>& angles, const int width, const int height) const
 {
 	Features features = Features();
 	int size = width*height;
@@ -120,11 +120,8 @@ BRIEF::Features rBRIEF::extractFeature(unsigned char* image, std::vector<cv::Poi
 		{
 			int x1 = it->x + xp[i]; int y1 = it->y + yp[i];
 			int x2 = it->x + xp[i + 1]; int y2 = it->y + yp[i + 1];
-			int stp = y1*width + x1;
-			int edp = y2*width + x2;
-
-			if (stp>0 && stp<size && edp>0 && edp<size)
-				f.setbit(bitpos, image[stp] > image[edp]);
+			
+			f.setbit(bitpos, image[y1][x1] > image[y2][x2]);
 		}
 		f.position = (*it);
 		features.push_back(f);

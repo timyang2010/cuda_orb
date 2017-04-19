@@ -63,8 +63,8 @@ public:
 	~rBRIEF();
 	//indexer to obtain underlying BRIEF test pattern
 	std::pair<int*, int*> operator [](int i) const;
-	virtual Features extractFeature(unsigned char* image, std::vector<cv::Point2d>& positions, const int width, const int height) const;
-	virtual Features extractFeature(unsigned char* image, std::vector<cv::Point2d>& positions, std::vector<float>& angles, const int width, const int height) const;
+	virtual Features extractFeature(unsigned char** image, std::vector<cv::Point2d>& positions, const int width, const int height) const;
+	virtual Features extractFeature(unsigned char** image, std::vector<cv::Point2d>& positions, std::vector<float>& angles, const int width, const int height) const;
 };
 
 

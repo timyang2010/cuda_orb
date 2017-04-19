@@ -68,7 +68,7 @@ __device__ void localElMul(float in1[tile][tile], float in2[tile][tile], float o
 }
 
 
-__global__ void FAST_Refine(unsigned char* __restrict__ inputImage, uint4* __restrict__ cornerMap,const int count, const int width, const  int height)
+__global__ void FAST_Refine(unsigned char* __restrict__ inputImage, float4* __restrict__ cornerMap,const int count, const int width, const  int height)
 {
 	const float k = 0.06;
 	const float gk3[][3] = { {1,2,1},{2,4,2},{1,2,1} };
@@ -81,7 +81,7 @@ __global__ void FAST_Refine(unsigned char* __restrict__ inputImage, uint4* __res
 	int threadIndex = threadIdx.x + blockDim.x*blockIdx.x;
 	if (threadIndex < count)
 	{
-		uint4 cvector = cornerMap[threadIndex];
+		float4 cvector = cornerMap[threadIndex];
 		if (cvector.x > 3 && cvector.x < width - 3 && cvector.y>3 && cvector.y < height - 3)
 		{
 			int ptr = cvector.x - (tile / 2) + (cvector.y - tile / 2)*width;
@@ -134,21 +134,21 @@ __global__ void FAST_Refine(unsigned char* __restrict__ inputImage, uint4* __res
 	}		
 }
 #include <math.h>
-__global__ void ComputeOrientation(unsigned char* __restrict__ inputImage, uint4* __restrict__ cornerMap, const int count, const int width, const  int height)
+__global__ void ComputeOrientation(unsigned char* __restrict__ inputImage, float4* __restrict__ cornerMap, const int count, const int width, const  int height)
 {
 	int idx = threadIdx.x + blockDim.x*blockIdx.x;
-	__shared__ float sumx[32];
-	__shared__ float sumy[32];
-	__shared__ float sum[32];
+	__shared__ float sumx[33];
+	__shared__ float sumy[33];
+	__shared__ float sum[33];
 	int tid = threadIdx.x;
+
 	sumx[tid] = 0;
 	sumy[tid] = 0;
 	sum[tid] = 0;
-	uint4 p = cornerMap[idx];
+	float4 p = cornerMap[idx];
 	int x = p.x,y=p.y;
-	
 	int c = x + y*width;
-	int w = 32;
+	int w = 18;
 	float w2 = w*w;
 	for (int i = -w, wh = -w * width; i <= w; i += 1, wh += width)
 	{
@@ -160,8 +160,9 @@ __global__ void ComputeOrientation(unsigned char* __restrict__ inputImage, uint4
 			sum[tid] += value;
 		}
 	}
-	float ang = atanf(sumy[threadIdx.x] / sumx[threadIdx.x])*180.0f / 3.14159f;
-	if (inputImage[c] < sum[tid]/w2)ang += 180;
-	cornerMap[idx].z = ang + 360;
-
+	
+	float ang = atanf(sumy[threadIdx.x] / sumx[threadIdx.x]);
+	if (inputImage[c] < sum[tid]/w2)ang += 3.14159f/2;
+	cornerMap[idx].z = ang;
+	//cornerMap[idx].z = 3.14159/2;
 }
