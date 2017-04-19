@@ -139,19 +139,29 @@ __global__ void ComputeOrientation(unsigned char* __restrict__ inputImage, uint4
 	int idx = threadIdx.x + blockDim.x*blockIdx.x;
 	__shared__ float sumx[32];
 	__shared__ float sumy[32];
-	sumx[threadIdx.x] = 0;
-	sumy[threadIdx.x] = 0;
+	__shared__ float sum[32];
+	int tid = threadIdx.x;
+	sumx[tid] = 0;
+	sumy[tid] = 0;
+	sum[tid] = 0;
 	uint4 p = cornerMap[idx];
 	int x = p.x,y=p.y;
+	
 	int c = x + y*width;
-
-	for (int i = -3, wh = -3 * width; i <= 3; i += 1, wh += width)
+	int w = 32;
+	float w2 = w*w;
+	for (int i = -w, wh = -w * width; i <= w; i += 1, wh += width)
 	{
-		for (int j = -3; j <= 3; ++j)
+		for (int j = -w; j <= w; ++j)
 		{
-			sumx[threadIdx.x] += inputImage[c + wh + j]*i;
-			sumy[threadIdx.x] += inputImage[c + wh + j]*j;
+			unsigned char value = inputImage[c + wh + j];
+			sumx[tid] += value*i;
+			sumy[tid] += value*j;
+			sum[tid] += value;
 		}
 	}
-	cornerMap[idx].z = atanf(sumy[threadIdx.x] / sumx[threadIdx.x])*180.0f/3.14159f + 360;
+	float ang = atanf(sumy[threadIdx.x] / sumx[threadIdx.x])*180.0f / 3.14159f;
+	if (inputImage[c] < sum[tid]/w2)ang += 180;
+	cornerMap[idx].z = ang + 360;
+
 }

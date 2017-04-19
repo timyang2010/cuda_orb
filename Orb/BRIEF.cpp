@@ -60,10 +60,13 @@ BRIEF::Features BRIEF::extractFeature(unsigned char** image, vector<Point2d>& po
 		Feature f;
 		for (int i = 0, bitpos = 0; i < 512; i += 2, ++bitpos)
 		{
-			int x1 = it->x + xp[i]; int y1 = it->y + yp[i];
-			int x2 = it->x + xp[i + 1]; int y2 = it->y + yp[i + 1];
+			if (it->x > 16 && it->x < width - 16 && it->y>16 && it->y < height - 16)
+			{
+				int x1 = it->x + xp[i]; int y1 = it->y + yp[i];
+				int x2 = it->x + xp[i + 1]; int y2 = it->y + yp[i + 1];
+				f.setbit(bitpos, image[y1][x1] > image[y2][x2]);
+			}
 			
-			f.setbit(bitpos, image[y1][x1] > image[y2][x2]);
 		}
 		f.position = (*it);
 		features.push_back(f);

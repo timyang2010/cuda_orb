@@ -4,7 +4,7 @@
 #include "device_launch_parameters.h"
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
-#include <arrayfire.h>
+#include <arrayfire.h> 
 #include "Profiler.cuh"
 #include "Memory.cuh"
 #include "FAST.cuh"
@@ -23,10 +23,10 @@ using namespace std;
 #define Harris_Threshold 50000000
 #define FAST_Corner_Limit 500000
 
-void AFFAST(Mat& grey, vector<Point2d>& poi)
+void AFFAST(Mat& grey, vector<uint4>& poi)
 {
 	af::array afa = transpose(af::array(grey.cols, grey.rows, grey.data, af::source::afHost));
-	af::features fast_features = af::fast(afa, 50, 9, 1, 0.05f);
+	af::features fast_features = af::fast(afa, 30, 12, true, 0.01f);
 	int N = fast_features.getNumFeatures();
 	af::array x_pos = fast_features.getX();
 	af::array y_pos = fast_features.getY();
@@ -36,7 +36,8 @@ void AFFAST(Mat& grey, vector<Point2d>& poi)
 	//float* x = x_pos.host<float>();
 	for (int i = 0; i < N; ++i)
 	{
-		poi.push_back(Point2d(x[i], y[i]));
+		
+		poi.push_back(uint4{ (uint)x[i],(uint)y[i], 0,0});
 		//circle(frame, Point(x[i], y[i]), 2, Scalar(255, 0, 255), 1);
 	}
 
@@ -48,7 +49,7 @@ int main(int argc,char** argv)
 	Profiler profiler;
 	VideoCapture cap; 	
 
-	cap.open("C:\\Users\\timya\\Desktop\\203394129.mp4");
+	cap.open("C:\\Users\\timya\\Videos\\Captures\\3.mp4");
 	if (!cap.isOpened())
 	{
 		cout << "Load Failed" << endl;
@@ -78,58 +79,33 @@ int main(int argc,char** argv)
 		cvtColor(frame, grey, CV_BGR2GRAY);	
 		gpuInputBuffer.upload(grey.data);
 		profiler.Start();
-		
-		FAST <<< dim3(frame.cols / FAST_TILE, frame.rows / FAST_TILE), dim3(FAST_TILE, FAST_TILE) >>> (gpuInputBuffer, gpuOutputBuffer,10, grey.cols, grey.rows);
-
-		
-		gpuOutputBuffer.download(out.data);
-		profiler.Log("FAST");
 		vector<uint4> corners;
-		for (uint i = 50; i < grey.cols - 50; ++i)
-			for (uint j = 50; j < grey.rows -50; ++j)
-			{
-				uint cvalue = out.data[i + j*grey.cols];
-				if (cvalue > 0)
-				{					
-					corners.push_back(uint4{ i,j,0,0});
-					points++;
-				}
-			}
-		int processed_count = points > FAST_Corner_Limit ? FAST_Corner_Limit : points;
-		profiler.Start();
-		AngleMap.upload(corners.data(), processed_count);
-		FAST_Refine << < corners.size() / 32, 32 >> > (gpuInputBuffer, AngleMap, corners.size(), grey.cols, grey.rows);
-		AngleMap.download(corners.data(), processed_count);	
+		AFFAST(grey, corners);
+		for (int i = 0; i < corners.size(); ++i)
+		{
+			cv::circle(frame, Point2f(corners[i].x,corners[i].y), 2, Scalar(255, 255, 0, 0));
+		}
+		profiler.Log("FAST");
 
-		profiler.Log("Supression");
-		std::sort(corners.begin(), corners.end(), [](const uint4&x, const uint4& y) {
-			return x.w > y.w;
-		});
-		profiler.Log("Sort");
-		int cc = min(processed_count, 2000);
+		int cc = corners.size() < 5000 ? corners.size() : 5000;
 		AngleMap.upload(corners.data(), cc);
 		ComputeOrientation << < corners.size() / 32, 32 >> > (gpuInputBuffer, AngleMap, cc, grey.cols, grey.rows);
 		AngleMap.download(corners.data(), cc);
 
 		profiler.Log("Angle");
-		
 
-		vector<Point2d> poi;
-		vector<float> angles;
-		for (int i = 0; i < cc; ++i)
-		{			
-
-			if (corners[i].w > 1000000)
-			{
-				poi.push_back(Point2d(corners[i].x, corners[i].y));
-				angles.push_back(corners[i].z);
-				cv::circle(frame, Point2d(corners[i].x, corners[i].y), 1, Scalar(255, 255, 0, 0));
-			}
-
+		for (int i = 0; i < corners.size(); ++i)
+		{
+			cv::circle(frame, Point2f(corners[i].x, corners[i].y), 2, Scalar(255, 255, 0, 0));
+			cv::line(frame, 
+				Point2f(corners[i].x,corners[i].y), 
+				Point2f(corners[i].x + 10*cos((float)corners[i].z/180*3.16159), corners[i].y + 10 * sin((float)corners[i].z / 180 * 3.16159)),
+				Scalar(255, 255, 0, 0));
 		}
-		profiler.Log("Draw");
-		BRIEF::Features features = extractor.extractFeature(grey2d, poi, grey.cols, grey.rows);
-		profiler.Log("rBRIEF");
+
+
+	/*	BRIEF::Features features = extractor.extractFeature(grey2d, corners, grey.cols, grey.rows);
+		profiler.Log("BRIEF");
 
 
 		if (features_old.size() > 0)
@@ -171,13 +147,14 @@ int main(int argc,char** argv)
 
 		features_old = features;
 
-
+		profiler.Log("Match");*/
 
 
 		profiler.Report(); 
 		
 	  	cv::imshow("output", frame);
-		if (waitKey(1) >= 0) break;
+		waitKey();
+		//if (waitKey(1) >= 0) break;
 	}
 	return 0;
 }
