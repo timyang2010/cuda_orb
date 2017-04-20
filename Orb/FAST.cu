@@ -133,36 +133,45 @@ __global__ void FAST_Refine(unsigned char* __restrict__ inputImage, float4* __re
 		}
 	}		
 }
+
+#define _USE_MATH_DEFINES
 #include <math.h>
 __global__ void ComputeOrientation(unsigned char* __restrict__ inputImage, float4* __restrict__ cornerMap, const int count, const int width, const  int height)
 {
 	int idx = threadIdx.x + blockDim.x*blockIdx.x;
+	__shared__ float ang[33];
 	__shared__ float sumx[33];
 	__shared__ float sumy[33];
 	__shared__ float sum[33];
 	int tid = threadIdx.x;
 
-	sumx[tid] = 0;
-	sumy[tid] = 0;
-	sum[tid] = 0;
+	sumx[tid] = 1;
+	sumy[tid] = 1;
+	sum[tid] = 1;
 	float4 p = cornerMap[idx];
-	int x = p.x,y=p.y;
+	int x = p.x, y = p.y;
 	int c = x + y*width;
-	int w = 18;
+	const int w = 19;
 	float w2 = w*w;
 	for (int i = -w, wh = -w * width; i <= w; i += 1, wh += width)
 	{
 		for (int j = -w; j <= w; ++j)
 		{
-			unsigned char value = inputImage[c + wh + j];
+			float value = (float)(inputImage[c + wh + j]);
 			sumx[tid] += value*i;
 			sumy[tid] += value*j;
 			sum[tid] += value;
 		}
 	}
-	
-	float ang = atanf(sumy[threadIdx.x] / sumx[threadIdx.x]);
-	if (inputImage[c] < sum[tid]/w2)ang += 3.14159f/2;
-	cornerMap[idx].z = ang;
-	//cornerMap[idx].z = 3.14159/2;
+	int cx = x + sumx[tid] / sum[tid];
+	int cy = y + sumy[tid] / sum[tid];
+	int cc = cx + cy*width;
+
+	ang[tid] = atan(sumy[tid] / sumx[tid]);
+
+	if (inputImage[c] < inputImage[cc])ang[tid] += M_PI;
+	ang[tid] = ang[tid] / M_PI * 180;
+	cornerMap[idx].z = int((ang[tid] + 360) / 12) % 30;
+	//cornerMap[idx].w = cy;
+	//cornerMap[idx].z = cx;
 }

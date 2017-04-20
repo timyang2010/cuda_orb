@@ -2,21 +2,22 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <CudaCompile Include="kernel.cu" />
-    <CudaCompile Include="Utility.cu" />
     <CudaCompile Include="FAST.cu">
       <Filter>Fast</Filter>
     </CudaCompile>
+    <CudaCompile Include="Orb.cu" />
+    <CudaCompile Include="Orb_Fast.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Profiler.cuh" />
     <ClInclude Include="Memory.cuh" />
-    <ClInclude Include="Utility.cuh" />
     <ClInclude Include="FAST.cuh">
       <Filter>Fast</Filter>
     </ClInclude>
     <ClInclude Include="brief.h">
       <Filter>BRIEF</Filter>
     </ClInclude>
+    <ClInclude Include="Profiler.h" />
+    <ClInclude Include="Orb.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Fast">

@@ -48,8 +48,8 @@ private:
 class rBRIEF : public BRIEF
 {
 private:
-	std::vector<int*> lutx;
-	std::vector<int*> luty;
+	std::vector< std::vector<int> > lutx;
+	std::vector< std::vector<int> > luty;
 protected:
 	int angleCount;
 	virtual void generateLUT(const int count, const int dim, const int _angleCount,int* _xp,int* _yp);
@@ -62,7 +62,7 @@ public:
 	rBRIEF(int S, int* _xp, int* _yp);
 	~rBRIEF();
 	//indexer to obtain underlying BRIEF test pattern
-	std::pair<int*, int*> operator [](int i) const;
+	std::pair< std::vector<int>, std::vector<int>> operator [](int i) const;
 	virtual Features extractFeature(unsigned char** image, std::vector<cv::Point2d>& positions, const int width, const int height) const;
 	virtual Features extractFeature(unsigned char** image, std::vector<cv::Point2d>& positions, std::vector<float>& angles, const int width, const int height) const;
 };

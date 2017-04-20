@@ -8,18 +8,18 @@
 using namespace std;
 using namespace cv;
 
-rBRIEF::rBRIEF() : rBRIEF(BRIEF_DEFAULT_WINDOW_SIZE)
+rBRIEF::rBRIEF() : rBRIEF(BRIEF_DEFAULT_WINDOW_SIZE*2)
 {
 
 }
-rBRIEF::rBRIEF(int S) : rBRIEF(S, BRIEF_DEFAULT_TEST_COUNT)
+rBRIEF::rBRIEF(int S) : rBRIEF(S, BRIEF_DEFAULT_TEST_COUNT*2)
 {
 
 }
 rBRIEF::rBRIEF(int S,int count)
 {
 	size = S;
-	int xp[256],yp[256];
+	int xp[512],yp[512];
 	BRIEF::GenerateBinaryTests(xp, yp, count, size);
 	generateLUT(512, S, sBRIEF_DEFAULT_LUT_SIZE,xp,yp);
 }
@@ -30,19 +30,7 @@ rBRIEF::rBRIEF(int S, int* _xp, int* _yp)
 }
 rBRIEF::~rBRIEF()
 {
-	int* ptr;
-	for (; lutx.size()>0; )
-	{
-		ptr = lutx[0];
-		lutx.erase(lutx.begin());
-		delete[] ptr;
-	}
-	for (; luty.size()>0;)
-	{
-		ptr = luty[0];
-		luty.erase(luty.begin());
-		delete[] ptr;
-	}
+
 }
 
 
@@ -56,29 +44,28 @@ void rBRIEF::generateLUT(const int count, const int dim, const int num_angle,int
 	{
 		double _sin = sin(ang);
 		double _cos = cos(ang);
-		int *x = new int[count];
-		int *y = new int[count];
+		vector<int> x;
+		vector<int> y;
 
 		for (int j = 0; j < count; ++j)
 		{
-			x[j] = (double)xp[j] * _cos - (double)yp[j] * _sin;
-			y[j] = (double)(xp[j]) * _sin + (double)yp[j] * _cos;
+			x.push_back((double)xp[j] * _cos - (double)yp[j] * _sin);
+			y.push_back((double)(xp[j]) * _sin + (double)yp[j] * _cos);
 		}
 		lutx.push_back(x);
 		luty.push_back(y);
 	}
-	cout << lutx.size() << "," << luty.size() << endl;
 }
-pair<int*, int*> rBRIEF::operator [](int i) const
+pair<vector<int>, vector<int>> rBRIEF::operator [](int i) const
 {
-	return pair<int*, int*>(lutx[i], luty[i]);
+	return pair<vector<int>, vector<int>>(lutx[i], luty[i]);
 }
 BRIEF::Features rBRIEF::extractFeature(unsigned char** image, std::vector<cv::Point2d>& positions, const int width, const int height) const
 {
 	Features features = Features();
 	int size = width*height;
-	int* xp = lutx[0];
-	int* yp = luty[0];
+	vector<int> xp = lutx[0];
+	vector<int> yp = luty[0];
 	for (vector<Point2d>::iterator it = positions.begin(); it != positions.end(); ++it)
 	{
 		Feature f;
@@ -104,26 +91,28 @@ BRIEF::Features rBRIEF::extractFeature(unsigned char** image, std::vector<cv::Po
 	Features features = Features();
 	int size = width*height;
 	float delta = 2 * M_PI / angleCount;
-	assert(positions.size() == angles.size());
+	//assert(positions.size() == angles.size());
 	int length = positions.size();
 	for (int i = 0; i < length; ++i)
 	{
 
-		int ang = ((int)(angles[i] / delta)) % angleCount;
-		int* xp = lutx[ang];
-		int* yp = luty[ang];
+		int ang = angles[i];
+		vector<int> xp = lutx[ang];
+		vector<int> yp = luty[ang];
 
-		Point2d* it = &(positions[i]);
+		Point2d it = positions[i];
 		Feature f;
 #pragma omp parallel 
 		for (int i = 0, bitpos = 0; i < 512; i += 2, ++bitpos)
 		{
-			int x1 = it->x + xp[i]; int y1 = it->y + yp[i];
-			int x2 = it->x + xp[i + 1]; int y2 = it->y + yp[i + 1];
 			
-			f.setbit(bitpos, image[y1][x1] > image[y2][x2]);
+				int x1 = it.x + xp[i]; int y1 = it.y + yp[i];
+				int x2 = it.x + xp[i + 1]; int y2 = it.y + yp[i + 1];
+				f.setbit(bitpos, image[y1][x1] > image[y2][x2]);
+			
+			
 		}
-		f.position = (*it);
+		f.position = (it);
 		features.push_back(f);
 	}
 	return features;
