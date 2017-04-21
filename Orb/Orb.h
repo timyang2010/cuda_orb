@@ -10,7 +10,7 @@ class Orb
 public:
 	Orb();
 	void computeOrientation(cuArray<unsigned char>& frame, std::vector<float4>& corners, int width, int height);
-	std::vector<float4> fast(cuArray<uchar>& ibuffer, cuArray<uchar>& aux, const int width, const int height, const int padding = 50);
+	std::vector<float4> fast(cuArray<uchar>& ibuffer, cuArray<uchar>& aux,int thres, const int width, const int height, const int padding = 50);
 private:
 	cuArray<float4> AngleMap = cuArray<float4>(CORNER_LIMIT);
 };

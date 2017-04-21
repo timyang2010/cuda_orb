@@ -28,10 +28,10 @@ void BRIEF::GenerateBinaryTests(int* x, int* y, const int count, const int dim)
 		y[i] = rand() % dim - radius;
 	}
 }
-BRIEF::Features BRIEF::extractFeature(unsigned char* image, vector<Point2d>& positions, const int width, const int height)  const
+BRIEF::Features BRIEF::extractFeature(uint8_t* image, vector<Point2d>& positions, const int width, const int height)  const
 {
 	int size = width*height;
-	BRIEF::Features features = BRIEF::Features();
+	BRIEF::Features features;
 	for (vector<Point2d>::iterator it = positions.begin(); it != positions.end(); ++it)
 	{
 		Feature f;
@@ -51,10 +51,10 @@ BRIEF::Features BRIEF::extractFeature(unsigned char* image, vector<Point2d>& pos
 	}
 	return features;
 }
-BRIEF::Features BRIEF::extractFeature(unsigned char** image, vector<Point2d>& positions, const int width, const int height)  const
+BRIEF::Features BRIEF::extractFeature(uint8_t** image, vector<Point2d>& positions, const int width, const int height)  const
 {
 	int size = width*height;
-	BRIEF::Features features = BRIEF::Features();
+	BRIEF::Features features;
 	for (vector<Point2d>::iterator it = positions.begin(); it != positions.end(); ++it)
 	{
 		Feature f;
@@ -80,11 +80,9 @@ unsigned int BRIEF::DistanceBetween(Feature& f1, Feature& f2) const
 
 BRIEF::Feature::Feature()
 {
-	for (int i = 0; i < 8; ++i)
-	{
-		value[i] = 0;
-	}
+	memset(value, 0, sizeof(int) * 8);
 }
+
 int BRIEF::Feature::operator- (Feature& feature) const
 {
 	unsigned int sum_difeatures = 0;

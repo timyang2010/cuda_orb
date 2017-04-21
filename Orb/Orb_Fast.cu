@@ -3,11 +3,11 @@
 
 #include <arrayfire.h> 
 
-std::vector<float4> Orb::fast(cuArray<uchar>& ibuffer, cuArray<uchar>& aux, const int width, const int height,  const int padding)
+std::vector<float4> Orb::fast(cuArray<uchar>& ibuffer, cuArray<uchar>& aux, int thres, const int width, const int height,  const int padding)
 {
 	std::vector<float4> corners;
 	cv::Mat auxmat = cv::Mat(width, height, CV_8UC1);
-	FAST << < dim3(width / FAST_TILE, height / FAST_TILE), dim3(FAST_TILE, FAST_TILE) >> > (ibuffer, aux, 50, width, height);
+	FAST << < dim3(width / FAST_TILE, height / FAST_TILE), dim3(FAST_TILE, FAST_TILE) >> > (ibuffer, aux,thres, width, height);
 	aux.download(auxmat.data);
 	for (uint i = padding; i < width - padding; ++i)
 		for (uint j = padding; j < height - padding; ++j)
@@ -35,6 +35,5 @@ void AFFAST(cv::Mat& grey, std::vector<float4>& poi)
 	{
 		poi.push_back(float4{ (float)x[i],(float)y[i], 0,0 });
 	}
-
 }
 

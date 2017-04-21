@@ -12,21 +12,33 @@ class BRIEF
 
 public:
 	class Feature;
-	class Features : public std::vector<Feature> {};
+	class Features : public std::vector<Feature>
+	{
+	public:
+		Features() : vector<Feature>()
+		{
+
+		}
+		Features(int length) : vector<Feature>(length)
+		{
+
+		}
+	};
 	BRIEF();
 	BRIEF(int S);
-	virtual Features extractFeature(unsigned char* image, std::vector<cv::Point2d>& positions, const int width, const int height) const;
-	virtual Features extractFeature(unsigned char** image, std::vector<cv::Point2d>& positions, const int width, const int height) const;
+	virtual Features extractFeature(uint8_t* image, std::vector<cv::Point2d>& positions, const int width, const int height) const;
+	virtual Features extractFeature(uint8_t** image, std::vector<cv::Point2d>& positions, const int width, const int height) const;
 	unsigned int DistanceBetween(Feature& f1, Feature& f2) const;
 
 	class Feature
 	{
 	public:
 		Feature();
+		
 		cv::Point2d position;
 		int operator -(Feature&) const;
 		friend std::ostream& operator<<(std::ostream& os, const Feature& dt);
-		void setbit(int pos, bool v);
+		inline void setbit(int pos, bool v);
 		union {
 			//8*uint32 = 8*32bit which is 256 binary tests
 			unsigned int value[8];
@@ -42,8 +54,6 @@ private:
 	int xp[512];
 	int yp[512];
 };
-
-
 
 class rBRIEF : public BRIEF
 {
@@ -63,12 +73,29 @@ public:
 	~rBRIEF();
 	//indexer to obtain underlying BRIEF test pattern
 	std::pair< std::vector<int>, std::vector<int>> operator [](int i) const;
-	virtual Features extractFeature(unsigned char** image, std::vector<cv::Point2d>& positions, const int width, const int height) const;
-	virtual Features extractFeature(unsigned char** image, std::vector<cv::Point2d>& positions, std::vector<float>& angles, const int width, const int height) const;
+	virtual Features extractFeature(uint8_t** image, std::vector<cv::Point2d>& positions, const int width, const int height) const;
+	virtual Features extractFeature(uint8_t** image, std::vector<cv::Point2d>& positions, std::vector<float>& angles, const int width, const int height) const;
 };
 
 
 
-std::vector< std::pair<cv::Point2f, cv::Point2f> > MatchBF(BRIEF::Features& f1, BRIEF::Features& f2);
+std::vector< std::pair<cv::Point2f, cv::Point2f> > MatchBF(BRIEF::Features& f1, BRIEF::Features& f2, int threshold = 30);
+
+
+//split all features into 256 bins
+class LSHashSet
+{
+public:
+	LSHashSet();
+	LSHashSet(uint8_t bitmask[8]);
+	BRIEF::Features& operator[](int i);
+protected:
+	uint8_t hash(BRIEF::Feature& feature);
+	uint8_t bitmask[8];
+	BRIEF::Features table[256];
+};
+
+
+
 
 #endif

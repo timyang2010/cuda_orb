@@ -41,7 +41,6 @@ __global__ void FAST(unsigned char* __restrict__ inputImage, unsigned char* __re
 			lowCount = (tile[x][y] < t_low) ? lowCount + 1 : 0;
 			if (highCount >= 12)
 			{
-
 				isCorner = true;
 				CornerType = true;
 			}

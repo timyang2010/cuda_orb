@@ -5,19 +5,32 @@
     <CudaCompile Include="FAST.cu">
       <Filter>Fast</Filter>
     </CudaCompile>
-    <CudaCompile Include="Orb.cu" />
-    <CudaCompile Include="Orb_Fast.cu" />
+    <CudaCompile Include="Orb.cu">
+      <Filter>Orb</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Orb_Fast.cu">
+      <Filter>Orb</Filter>
+    </CudaCompile>
+    <CudaCompile Include="rBRIEF.cu">
+      <Filter>BRIEF</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Memory.cuh" />
     <ClInclude Include="FAST.cuh">
       <Filter>Fast</Filter>
     </ClInclude>
     <ClInclude Include="brief.h">
       <Filter>BRIEF</Filter>
     </ClInclude>
-    <ClInclude Include="Profiler.h" />
-    <ClInclude Include="Orb.h" />
+    <ClInclude Include="Orb.h">
+      <Filter>Orb</Filter>
+    </ClInclude>
+    <ClInclude Include="Profiler.h">
+      <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory.cuh">
+      <Filter>utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Fast">
@@ -25,6 +38,12 @@
     </Filter>
     <Filter Include="BRIEF">
       <UniqueIdentifier>{297f1b5e-dda0-4fe4-96b7-bdcebf160541}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Orb">
+      <UniqueIdentifier>{7db14aa5-91fb-4799-9fef-c0dc8c0f6d6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utility">
+      <UniqueIdentifier>{fe02b567-fefe-4103-abfd-f726fd8c17ba}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,7 +53,11 @@
     <ClCompile Include="rBRIEF.cpp">
       <Filter>BRIEF</Filter>
     </ClCompile>
-    <ClCompile Include="Matcher.cpp">
+    <ClCompile Include="train_brief.cpp" />
+    <ClCompile Include="BRIEF_LSH.cpp">
+      <Filter>BRIEF</Filter>
+    </ClCompile>
+    <ClCompile Include="BRIEF_BF.cpp">
       <Filter>BRIEF</Filter>
     </ClCompile>
   </ItemGroup>

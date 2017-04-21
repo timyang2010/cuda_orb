@@ -60,9 +60,9 @@ pair<vector<int>, vector<int>> rBRIEF::operator [](int i) const
 {
 	return pair<vector<int>, vector<int>>(lutx[i], luty[i]);
 }
-BRIEF::Features rBRIEF::extractFeature(unsigned char** image, std::vector<cv::Point2d>& positions, const int width, const int height) const
+BRIEF::Features rBRIEF::extractFeature(uint8_t** image, std::vector<cv::Point2d>& positions, const int width, const int height) const
 {
-	Features features = Features();
+	Features features;
 	int size = width*height;
 	vector<int> xp = lutx[0];
 	vector<int> yp = luty[0];
@@ -86,34 +86,30 @@ BRIEF::Features rBRIEF::extractFeature(unsigned char** image, std::vector<cv::Po
 	return features;
 }
 
-BRIEF::Features rBRIEF::extractFeature(unsigned char** image, std::vector<cv::Point2d>& positions, vector<float>& angles, const int width, const int height) const
+BRIEF::Features rBRIEF::extractFeature(uint8_t** image, std::vector<cv::Point2d>& positions, vector<float>& angles, const int width, const int height) const
 {
-	Features features = Features();
+	Features features = Features(positions.size());
 	int size = width*height;
 	float delta = 2 * M_PI / angleCount;
 	//assert(positions.size() == angles.size());
 	int length = positions.size();
+#pragma omp parallel for
 	for (int i = 0; i < length; ++i)
 	{
-
 		int ang = angles[i];
 		vector<int> xp = lutx[ang];
 		vector<int> yp = luty[ang];
-
 		Point2d it = positions[i];
 		Feature f;
-#pragma omp parallel 
+
 		for (int i = 0, bitpos = 0; i < 512; i += 2, ++bitpos)
-		{
-			
-				int x1 = it.x + xp[i]; int y1 = it.y + yp[i];
-				int x2 = it.x + xp[i + 1]; int y2 = it.y + yp[i + 1];
-				f.setbit(bitpos, image[y1][x1] > image[y2][x2]);
-			
-			
+		{		
+			int x1 = it.x + xp[i]; int y1 = it.y + yp[i];
+			int x2 = it.x + xp[i + 1]; int y2 = it.y + yp[i + 1];
+			f.setbit(bitpos, image[y1][x1] > image[y2][x2]);
 		}
 		f.position = (it);
-		features.push_back(f);
+		features[i] = f;
 	}
 	return features;
 

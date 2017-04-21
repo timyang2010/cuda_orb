@@ -152,6 +152,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>-Xcompiler "/openmp" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -180,6 +181,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <CudaCompile Include="kernel.cu" />
     <CudaCompile Include="Orb.cu" />
     <CudaCompile Include="Orb_Fast.cu" />
+    <CudaCompile Include="rBRIEF.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="brief.h" />
@@ -190,8 +192,10 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BRIEF.cpp" />
-    <ClCompile Include="Matcher.cpp" />
+    <ClCompile Include="BRIEF_LSH.cpp" />
+    <ClCompile Include="BRIEF_BF.cpp" />
     <ClCompile Include="rBRIEF.cpp" />
+    <ClCompile Include="train_brief.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
