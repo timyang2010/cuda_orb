@@ -3,8 +3,9 @@
 
 #include <arrayfire.h> 
 
-void FAST(cuArray<uchar>& ibuffer, cuArray<uchar>& aux, std::vector<float4>& poi, const int width, const int height,  const int padding)
+std::vector<float4> Orb::fast(cuArray<uchar>& ibuffer, cuArray<uchar>& aux, const int width, const int height,  const int padding)
 {
+	std::vector<float4> corners;
 	cv::Mat auxmat = cv::Mat(width, height, CV_8UC1);
 	FAST << < dim3(width / FAST_TILE, height / FAST_TILE), dim3(FAST_TILE, FAST_TILE) >> > (ibuffer, aux, 50, width, height);
 	aux.download(auxmat.data);
@@ -14,9 +15,10 @@ void FAST(cuArray<uchar>& ibuffer, cuArray<uchar>& aux, std::vector<float4>& poi
 			uint cvalue = auxmat.data[i + j*width];
 			if (cvalue > 0)
 			{
-				poi.push_back({ (float)i,(float)j,0,0 });
+				corners.push_back({ (float)i,(float)j,0,0 });
 			}
 		}
+	return corners;
 }
 void AFFAST(cv::Mat& grey, std::vector<float4>& poi)
 {

@@ -34,6 +34,8 @@
     <ClCompile Include="rBRIEF.cpp">
       <Filter>BRIEF</Filter>
     </ClCompile>
-    <ClCompile Include="train.cpp" />
+    <ClCompile Include="Matcher.cpp">
+      <Filter>BRIEF</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

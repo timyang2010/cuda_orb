@@ -68,4 +68,7 @@ public:
 };
 
 
+
+std::vector< std::pair<cv::Point2f, cv::Point2f> > MatchBF(BRIEF::Features& f1, BRIEF::Features& f2);
+
 #endif

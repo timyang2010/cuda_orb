@@ -5,54 +5,72 @@
 template<typename T> class cuArray
 {
 public:
+
+	cuArray()
+	{
+		size = 0;
+	}
 	cuArray(int _size)
 	{
-		cudaMalloc(&ptr, _size * sizeof(T));
-		size = _size * sizeof(T);
+		cudaMalloc(&device_ptr, _size * sizeof(T));
+		size = _size;
 	}
 	cuArray(int _size,int value)
 	{
-		cudaMalloc(&ptr, _size * sizeof(T));
-		size = _size * sizeof(T);
-		cudaMemset(ptr, value, sizeof(T));
+		cudaMalloc(&device_ptr, _size * sizeof(T));
+		size = _size;
+		cudaMemset(device_ptr, value, sizeof(T));
 	}
+
 	~cuArray()
 	{
-		cudaFree(ptr);
+		if (size>0)
+			cudaFree(device_ptr);
 	}
+
+	cuArray<T> cuArray<T>::operator=(cuArray<T>& rhs)
+	{
+		device_ptr = rhs.device_ptr;
+		size = rhs.size;
+		return *this;
+	}
+
 	void clear()
 	{
-		cudaMemset(ptr, 0, size*sizeof(T));
+		cudaMemset(device_ptr, 0, size*sizeof(T));
 	}
 	operator T* () const
 	{
-		return ptr;
+		return device_ptr;
 	}
 	operator void* () const
 	{
-		return ptr;
+		return device_ptr;
 	}
-	void upload(T* source)
+	virtual void upload(T* source)
 	{
-		cudaMemcpy(ptr, source, size * sizeof(T), cudaMemcpyHostToDevice);
+		cudaMemcpy(device_ptr, source, size * sizeof(T), cudaMemcpyHostToDevice);
 	}
-	void download(T* dest)
+	virtual void download(T* dest)
 	{
-		cudaMemcpy(dest, ptr, size*sizeof(T), cudaMemcpyDeviceToHost);
+		cudaMemcpy(dest, device_ptr, size*sizeof(T), cudaMemcpyDeviceToHost);
 	}
-	void upload(T* source, size_t length)
+	virtual void upload(T* source, size_t length)
 	{
 		if(size>length)
-			cudaMemcpy(ptr, source, length * sizeof(T), cudaMemcpyHostToDevice);
+			cudaMemcpy(device_ptr, source, length * sizeof(T), cudaMemcpyHostToDevice);
 	}
-	void download(T* dest, size_t length)
+	virtual void download(T* dest, size_t length)
 	{
 		if (size>length)
-			cudaMemcpy(dest, ptr, length* sizeof(T), cudaMemcpyDeviceToHost);
+			cudaMemcpy(dest, device_ptr, length* sizeof(T), cudaMemcpyDeviceToHost);
 	}
-
+	int length()
+	{
+		return size;
+	}
 protected:
-	T* ptr;
+	T* device_ptr;
 	int size;
 };
 
