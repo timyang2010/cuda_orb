@@ -130,7 +130,7 @@ int main(int argc,char** argv)
 		features_old = features;
 		profiler.Log("Render");
 		
-		//cv::imshow("traj", grey+ renderTrajectory(hf));
+		cv::imshow("traj", grey+ renderTrajectory(hf));
 		profiler.Log("Display");
 		profiler.Report();
 	}
