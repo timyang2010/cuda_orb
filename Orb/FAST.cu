@@ -171,6 +171,5 @@ __global__ void ComputeOrientation(unsigned char* __restrict__ inputImage, float
 	if (inputImage[c] < inputImage[cc])ang[tid] += M_PI;
 	ang[tid] = ang[tid] / M_PI * 180;
 	cornerMap[idx].z = int((ang[tid] + 360) / 12) % 30;
-	//cornerMap[idx].w = cy;
-	//cornerMap[idx].z = cx;
+
 }

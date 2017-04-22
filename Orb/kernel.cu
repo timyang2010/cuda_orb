@@ -7,6 +7,7 @@
 #include "FAST.cuh"
 #include <math.h>
 #include "Orb.h"
+#include <opencv2\features2d.hpp>
 using namespace cv;
 using namespace std;
 
@@ -33,7 +34,7 @@ Mat renderTrajectory(Mat& iframe)
 int main(int argc,char** argv)
 {
 	const int padding = 50;
-	const string dir = "\\\\140.118.7.213\\Dataset\\sequence\\20.mp4";
+	const string dir = "C:\\Users\\timya\\Desktop\\281381759.mp4";
 	rBRIEF extractor;
 	Orb orb;
 	Profiler profiler;
@@ -62,17 +63,14 @@ int main(int argc,char** argv)
 		if (!cap.read(frame))break;
 		cvtColor(frame, grey, CV_BGR2GRAY);	
 		gpuInputBuffer.upload(grey.data);
-		
-
 		profiler.Start();
 		vector<float4> corners = orb.fast(gpuInputBuffer, gpuOutputBuffer, 50,frameWidth, frameHeight);
 		orb.computeOrientation(gpuInputBuffer, corners, frameWidth, frameHeight);
 		profiler.Log("FAST+Orientation");
-
+		
 		profiler.Start();
 		boxFilter(grey, i5, -1, Size(5, 5));
 		profiler.Log("Blur");
-
 		vector<Point2d> keypoints;
 		vector<float> angles;
 		for (int i = 0; i < corners.size(); ++i)
@@ -80,21 +78,24 @@ int main(int argc,char** argv)
 			keypoints.push_back(Point2d(corners[i].x, corners[i].y));
 			angles.push_back(corners[i].z);
 		}
+
 		profiler.Start();
 		BRIEF::Features features = extractor.extractFeature(grey2d, keypoints, angles, grey.cols, grey.rows);
 		profiler.Log("BRIEF");
 
 		Mat hf(frameHeight, frameWidth, CV_8UC1);
-
 		profiler.Start();
-		auto mpairs = MatchBF(features, features_old,30);
-		profiler.Log("Match");
-		profiler.Message("Rate", (float)mpairs.size()/ (float)corners.size());
-		for (auto v: mpairs)
-			line(hf, v.first,v.second, Scalar(255), 1, cv::LineTypes::LINE_AA);
-		profiler.Log("Render");
-		
+		MultiLSHashTable h;
+		profiler.Log("Hash_Build");
+		h.InsertRange(features);	
+		auto mpairs = h.Hash_Match(features_old);
+		profiler.Log("Hash_Match");
+		for (auto v : mpairs)
+			line(hf, v.first, v.second, Scalar(255), 0.5, cv::LineTypes::LINE_AA);
+
 		features_old = features;
+		
+
 		profiler.Report(); 
 		cv::imshow("traj", grey + renderTrajectory(hf));
 	}

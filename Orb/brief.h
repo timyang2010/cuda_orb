@@ -87,12 +87,34 @@ class LSHashSet
 {
 public:
 	LSHashSet();
-	LSHashSet(uint8_t bitmask[8]);
-	BRIEF::Features& operator[](int i);
+	LSHashSet(uint8_t bitmask);
+	BRIEF::Features& operator[](BRIEF::Feature& f);
+	void InsertRange(BRIEF::Features& features);
+
 protected:
 	uint8_t hash(BRIEF::Feature& feature);
-	uint8_t bitmask[8];
+	uint8_t bitmask;
 	BRIEF::Features table[256];
+};
+
+
+class MultiLSHashTable
+{
+public:
+	MultiLSHashTable()
+	{
+		for (int i = 0; i < 8; ++i)
+		{
+			hs.push_back(LSHashSet(i));
+		}
+	}
+	void InsertRange(BRIEF::Features& features);
+	
+	std::vector< std::pair<cv::Point2f, cv::Point2f> > Hash_Match(BRIEF::Features& fs, const int max_distance = 30);
+protected:
+	std::pair<int, BRIEF::Feature> Hash_Find(BRIEF::Feature& f, const int max_distance = 30);
+private:
+	std::vector<LSHashSet> hs;
 };
 
 
