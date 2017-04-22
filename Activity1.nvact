@@ -1,6 +1,6 @@
 ﻿<Model DefinitionId="3a3ca3f4-7ba7-4c09-a182-6ba59bf12599" DisplayName="Analysis Activity" xmlns="clr-namespace:Ark.PropertyModel;assembly=Ark">
-    <Property Name="Application" Value="C:\Users\timya\Documents\Visual Studio 2015\Projects\Orb\x64\Release\Orb.exe" />
-    <Property Name="Arguments" Value="C:\Users\timya\Videos\Captures\3.mp4" />
+    <Property Name="ActivityType" Value="Profile" />
+    <Property Name="Application" Value="C:\Users\timya\Desktop\Orb\x64\Release\Orb.exe" />
     <Property Name="EnableCudaApiContextAttachDetach" Value="True" />
     <Property Name="EnableCudaApiContextManagement" Value="True" />
     <Property Name="EnableCudaApiD3D10Interop" Value="True" />
@@ -108,9 +108,13 @@
     <Property Name="EnableToolsExtPushPopRangeTrace" Value="True" />
     <Property Name="EnableToolsExtResourceNaming" Value="True" />
     <Property Name="EnableToolsExtStartEndRangeTrace" Value="True" />
-    <Property Name="ExperimentsPresetConfiguration" Value="AllKernel" />
     <Property Name="ExtensionsToSynchronize" Value="*;" />
-    <Property Name="ProfileOptionKernelCounterValue" Value="10" />
-    <Property Name="ProfileOptionKernelSkipValue" Value="100" />
-    <Property Name="WorkingDirectory" Value="C:\Users\timya\Documents\Visual Studio 2015\Projects\Orb\Orb\" />
+    <Property Name="InitialReport" Value="CudaLaunches" />
+    <Property Name="ProfileOptionEnableKernelCaptureLimits" Value="True" />
+    <Property Name="ProfileOptionEnableKernelCounter" Value="True" />
+    <Property Name="ProfileOptionEnableKernelSkip" Value="True" />
+    <Property Name="ProfileOptionKernelCounterValue" Value="20" />
+    <Property Name="ProfileOptionKernelSkipValue" Value="500" />
+    <Property Name="ProfileOptionPrintProgress" Value="False" />
+    <Property Name="WorkingDirectory" Value="C:\Users\timya\Desktop\Orb\Orb\" />
 </Model>

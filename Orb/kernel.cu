@@ -5,9 +5,8 @@
 #include "Profiler.h"
 #include "Memory.cuh"
 #include "FAST.cuh"
-#include <math.h>
 #include "Orb.h"
-#include <opencv2\features2d.hpp>
+#include <thread>
 using namespace cv;
 using namespace std;
 
@@ -31,10 +30,41 @@ Mat renderTrajectory(Mat& iframe)
 	return rframe;
 }
 
+void blurmat(Mat& m)
+{
+	boxFilter(m, m, -1, Size(5, 5));
+}
+#define p_match pair<Point2f, Point2f>
+vector<p_match> stddev_reject(vector<p_match>& matches)
+{
+	vector<p_match> filtered;
+	double sum = 0,stddev = 0;
+	vector<float> ang(matches.size());
+	for (int i=0;i<matches.size();++i)
+	{
+		Point2f p = (matches[i].first - matches[i].second);		
+		ang[i] = atan2(p.y, p.x);
+		sum += ang[i];
+	}
+	sum /= matches.size();
+	for (int i = 0; i < matches.size(); ++i)
+	{
+		stddev += sqrt(pow(ang[i] - sum,2));
+	}
+	for (int i = 0; i < matches.size(); ++i)
+	{
+		if (abs(ang[i] - sum) < stddev)
+		{
+			filtered.push_back(matches[i]);
+		}
+	}
+	return filtered;
+}
+
 int main(int argc,char** argv)
 {
 	const int padding = 50;
-	const string dir = "C:\\Users\\timya\\Desktop\\281381759.mp4";
+	const string dir = "C:\\Users\\timya\\Desktop\\203394129.mp4";
 	rBRIEF extractor;
 	Orb orb;
 	Profiler profiler;
@@ -52,10 +82,8 @@ int main(int argc,char** argv)
 	Mat grey = Mat(frame.rows, frame.cols, CV_8UC1);	
 	int frameWidth = frame.cols, frameHeight = frame.rows;
 	int frameSize = frameWidth*frameHeight;
-	Mat i5 = Mat(frame.rows, frame.cols, CV_8UC1);
-	uchar** grey2d = convert2D(i5.data, frameWidth, frameHeight);
-	cuArray<uchar> gpuInputBuffer(frameSize);
-	cuArray<uchar> gpuOutputBuffer(frameSize);
+	uchar** grey2d = convert2D(grey.data, frameWidth, frameHeight);
+	cuArray<uchar> gpuInputBuffer(frameSize), gpuOutputBuffer(frameSize);
 	BRIEF::Features features_old;
 	
 	for (int fc = 0; waitKey(1)==-1; ++fc)
@@ -63,19 +91,23 @@ int main(int argc,char** argv)
 		if (!cap.read(frame))break;
 		cvtColor(frame, grey, CV_BGR2GRAY);	
 		gpuInputBuffer.upload(grey.data);
-		profiler.Start();
-		vector<float4> corners = orb.fast(gpuInputBuffer, gpuOutputBuffer, 50,frameWidth, frameHeight);
+	
+
+		profiler.Start();	
+		std::thread first([&]
+		{
+			boxFilter(grey, grey, -1, Size(5, 5));
+		});
+		vector<float4> corners = orb.fast(gpuInputBuffer, gpuOutputBuffer, 35, 9, frameWidth, frameHeight);
 		orb.computeOrientation(gpuInputBuffer, corners, frameWidth, frameHeight);
-		profiler.Log("FAST+Orientation");
-		
-		profiler.Start();
-		boxFilter(grey, i5, -1, Size(5, 5));
-		profiler.Log("Blur");
+		first.join();
+		profiler.Log("FAST");
+
 		vector<Point2d> keypoints;
 		vector<float> angles;
 		for (int i = 0; i < corners.size(); ++i)
 		{			
-			keypoints.push_back(Point2d(corners[i].x, corners[i].y));
+			keypoints.push_back(Point2d(corners[i].x, corners[i].y)); 
 			angles.push_back(corners[i].z);
 		}
 
@@ -85,19 +117,21 @@ int main(int argc,char** argv)
 
 		Mat hf(frameHeight, frameWidth, CV_8UC1);
 		profiler.Start();
-		MultiLSHashTable h;
-		profiler.Log("Hash_Build");
+		
+		MultiLSHashTable h;		
 		h.InsertRange(features);	
-		auto mpairs = h.Hash_Match(features_old);
+		profiler.Log("Hash_Build");
+		auto mpairs = h.Hash_Match(features_old,35);
+
 		profiler.Log("Hash_Match");
 		for (auto v : mpairs)
 			line(hf, v.first, v.second, Scalar(255), 0.5, cv::LineTypes::LINE_AA);
-
 		features_old = features;
+		profiler.Log("Render");
 		
-
-		profiler.Report(); 
-		cv::imshow("traj", grey + renderTrajectory(hf));
+		//cv::imshow("traj", grey+ renderTrajectory(hf));
+		profiler.Log("Display");
+		profiler.Report();
 	}
 	return 0;
 }

@@ -2,7 +2,7 @@
 #define TILE_RADIUS FAST_TILE/2
 #include "FAST.cuh"
 #include "device_launch_parameters.h"
-__global__ void FAST(unsigned char* __restrict__ inputImage, unsigned char* __restrict__ cornerMap, const int threshold, const int width, const  int height)
+__global__ void FAST(unsigned char* __restrict__ inputImage, unsigned char* __restrict__ cornerMap, const int threshold,const int arc_length, const int width, const  int height)
 {
 	const int offsetX[27] = { 3, 3, 2, 1, 0, -1, -2, -3, -3, -3, -2, -1, 0, 1, 2, 3, 3, 3, 2, 1, 0, -1, -2, -3, -3, -3, -2 };
 	const int offsetY[27] = { 0, 1, 2, 3, 3, 3, 2, 1, 0, -1, -2, -3, -3, -3, -2, -1, 0, 1, 2, 3, 3, 3, 2, 1, 0, -1, -2 };
@@ -39,12 +39,12 @@ __global__ void FAST(unsigned char* __restrict__ inputImage, unsigned char* __re
 			int x = offsetX[i] + cX, y = offsetY[i] + cY;
 			highCount = (tile[x][y] > t_high) ? highCount + 1 : 0;
 			lowCount = (tile[x][y] < t_low) ? lowCount + 1 : 0;
-			if (highCount >= 12)
+			if (highCount >= arc_length)
 			{
 				isCorner = true;
 				CornerType = true;
 			}
-			else if (lowCount >=12)
+			else if (lowCount >= arc_length)
 			{
 				isCorner = true;
 				CornerType = false;
@@ -55,7 +55,7 @@ __global__ void FAST(unsigned char* __restrict__ inputImage, unsigned char* __re
 }
 
 
-#define tile 5
+#define tile 7
 
 __device__ void localElMul(float in1[tile][tile], float in2[tile][tile], float out[tile][tile])
 {
@@ -69,8 +69,9 @@ __device__ void localElMul(float in1[tile][tile], float in2[tile][tile], float o
 
 __global__ void FAST_Refine(unsigned char* __restrict__ inputImage, float4* __restrict__ cornerMap,const int count, const int width, const  int height)
 {
-	const float k = 0.06;
-	const float gk3[][3] = { {1,2,1},{2,4,2},{1,2,1} };
+	const float k = 0.04;
+	//const float gk3[][3] = { {1,2,1},{2,4,2},{1,2,1} };
+	const float gk3[][5] = { { 1,4,6,4,1 },{ 4,16,24,16,4 },{ 6,24,36,24,6 },{ 4,16,24,16,4 },{ 1,4,6,4,1 } };
 	float roi[tile][tile];
 	float ix[tile][tile]; 
 	float  iy[tile][tile];
@@ -108,9 +109,9 @@ __global__ void FAST_Refine(unsigned char* __restrict__ inputImage, float4* __re
 			localElMul(iy, iy, iyy);
 
 			float sxx = 0, syy = 0, sxy = 0;
-			for (int i = 1; i <= 3; ++i)
+			for (int i = 1; i <= tile-2; ++i)
 			{
-				for (int j = 1; j <= 3; ++j)
+				for (int j = 1; j <= tile-2; ++j)
 				{
 					sxx += ixx[i][j] * gk3[i][j];
 					sxy += ixy[i][j] * gk3[i][j];
@@ -118,9 +119,9 @@ __global__ void FAST_Refine(unsigned char* __restrict__ inputImage, float4* __re
 				}
 			}
 
-			sxx /= 16;
-			syy /= 16;
-			sxy /= 16;
+			sxx /= 256;
+			syy /= 256;
+			sxy /= 256;
 			float trace = sxx + sxy;
 			float trace2 = trace*trace;
 			float det = sxx*syy - sxy*sxy;
