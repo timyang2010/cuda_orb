@@ -91,7 +91,8 @@ int main(int argc,char** argv)
 		if (!cap.read(frame))break;
 		cvtColor(frame, grey, CV_BGR2GRAY);	
 		gpuInputBuffer.upload(grey.data);
-	
+		
+
 
 		profiler.Start();	
 		std::thread first([&]
