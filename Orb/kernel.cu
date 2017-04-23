@@ -31,7 +31,7 @@ Mat renderTrajectory(Mat& iframe)
 int main(int argc,char** argv)
 {
 	const int padding = 50;
-	const string dir = "C:\\Users\\timya\\Desktop\\203394129.mp4";
+	const string dir = "C:\\Users\\timya\\Videos\\2017-04-23 23-49-17.mp4";
 	BRIEF::rBRIEF extractor;
 	Orb orb;
 	Profiler profiler;
@@ -56,6 +56,7 @@ int main(int argc,char** argv)
 	for (int fc = 0; waitKey(1)==-1; ++fc)
 	{
 		if (!cap.read(frame))break;
+		if (fc % 2 == 0)continue;
 		cvtColor(frame, grey, CV_BGR2GRAY);	
 		gpuInputBuffer.upload(grey.data);
 		

@@ -138,6 +138,7 @@ class BRIEF
 		public:
 			rBRIEF_pattern_trainer();
 			void run_batch_keypoints(uint8_t** image, std::vector<cv::Point2d>& positions, const int width, const int height);
+			void run_batch_keypoints(uint8_t** image, std::vector<cv::Point2d>& positions, std::vector<float>& angles, const int width, const int height);
 			std::vector<BRIEF::BinaryTest> generatePattern();
 		protected:
 			//encapsulate metadata for a single binary test and its test results
