@@ -11,9 +11,6 @@
     <CudaCompile Include="Orb_Fast.cu">
       <Filter>Orb</Filter>
     </CudaCompile>
-    <CudaCompile Include="rBRIEF.cu">
-      <Filter>BRIEF</Filter>
-    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FAST.cuh">
@@ -28,7 +25,7 @@
     <ClInclude Include="Profiler.h">
       <Filter>utility</Filter>
     </ClInclude>
-    <ClInclude Include="Memory.cuh">
+    <ClInclude Include="Memory.h">
       <Filter>utility</Filter>
     </ClInclude>
   </ItemGroup>
@@ -57,8 +54,8 @@
     <ClCompile Include="BRIEF_LSH.cpp">
       <Filter>BRIEF</Filter>
     </ClCompile>
-    <ClCompile Include="BRIEF_BF.cpp">
-      <Filter>BRIEF</Filter>
+    <ClCompile Include="Profiler.cpp">
+      <Filter>utility</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

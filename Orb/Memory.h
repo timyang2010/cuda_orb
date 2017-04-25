@@ -1,11 +1,10 @@
 #pragma once
-#ifndef MEMORY_CUH
-#define MEMORY_CUH
+#ifndef MEMORY_H
+#define MEMORY_H
 #include "cuda_runtime.h"
 template<typename T> class cuArray
 {
 public:
-
 	cuArray()
 	{
 		size = 0;

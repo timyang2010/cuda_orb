@@ -1,8 +1,5 @@
 #include "Orb.h"
 #include "FAST.cuh"
-
-//#include <arrayfire.h> 
-
 std::vector<float4> Orb::fast(cuArray<uchar>& ibuffer, cuArray<uchar>& aux, int thres, const int arc_length, const int width, const int height, const bool supression, const int padding)
 {
 	std::vector<float4> corners;

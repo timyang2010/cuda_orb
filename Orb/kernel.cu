@@ -3,7 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 #include "Profiler.h"
-#include "Memory.cuh"
+#include "Memory.h"
 #include "FAST.cuh"
 #include "Orb.h"
 #include <thread>
@@ -31,7 +31,7 @@ Mat renderTrajectory(Mat& iframe)
 int main(int argc,char** argv)
 {
 	const int padding = 50;
-	const string dir = "C:\\Users\\timya\\Videos\\2017-04-23 23-49-17.mp4";
+	const string dir = "\\\\140.118.7.213\\Dataset\\sequence\\13.mp4";
 	BRIEF::rBRIEF extractor;
 	Orb orb;
 	Profiler profiler;
@@ -79,7 +79,7 @@ int main(int argc,char** argv)
 		}
 
 		profiler.Start();
-		BRIEF::BRIEF::Features features = extractor.extractFeature(grey2d, keypoints, angles,frameWidth, frameHeight);
+		BRIEF::BRIEF::Features features = extractor.extractFeature(grey2d, keypoints,angles, frameWidth, frameHeight);
 		profiler.Log("BRIEF");
 
 		Mat hf(frameHeight, frameWidth, CV_8UC1);

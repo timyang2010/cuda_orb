@@ -181,19 +181,18 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <CudaCompile Include="kernel.cu" />
     <CudaCompile Include="Orb.cu" />
     <CudaCompile Include="Orb_Fast.cu" />
-    <CudaCompile Include="rBRIEF.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="brief.h" />
     <ClInclude Include="FAST.cuh" />
-    <ClInclude Include="Memory.cuh" />
+    <ClInclude Include="Memory.h" />
     <ClInclude Include="Orb.h" />
     <ClInclude Include="Profiler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BRIEF.cpp" />
     <ClCompile Include="BRIEF_LSH.cpp" />
-    <ClCompile Include="BRIEF_BF.cpp" />
+    <ClCompile Include="Profiler.cpp" />
     <ClCompile Include="rBRIEF.cpp" />
     <ClCompile Include="train_brief.cpp" />
   </ItemGroup>

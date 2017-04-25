@@ -1,6 +1,6 @@
 #pragma once
 #include "cuda_runtime.h"
-#include "Memory.cuh"
+#include "Memory.h"
 #include "brief.h"
 #include <vector>
 #include <opencv2/opencv.hpp>
@@ -15,7 +15,3 @@ private:
 	cuArray<float4> AngleMap = cuArray<float4>(CORNER_LIMIT);
 
 };
-
-
-
-void AFFAST(cv::Mat& grey, std::vector<float4>& poi);
