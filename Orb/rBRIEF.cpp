@@ -2,10 +2,10 @@
 
 
 #include "brief.h"
-#include <opencv2\core.hpp>
+#include <opencv2/core.hpp>
 #include <iostream>
 #include <vector>
-#include <immintrin.h>
+
 #define M_PI 3.14159265358979323846
 using namespace std;
 using namespace cv;

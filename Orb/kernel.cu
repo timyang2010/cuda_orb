@@ -79,7 +79,7 @@ int main(int argc,char** argv)
 		}
 
 		profiler.Start();
-		BRIEF::BRIEF::Features features = extractor.extractFeature(grey2d, keypoints, angles, frameWidth, frameHeight);
+		BRIEF::BRIEF::Features features = extractor.extractFeature(grey2d, keypoints, angles,frameWidth, frameHeight);
 		profiler.Log("BRIEF");
 
 		Mat hf(frameHeight, frameWidth, CV_8UC1);
@@ -96,7 +96,7 @@ int main(int argc,char** argv)
 		features_old = features;
 		profiler.Log("Render");
 		
-		cv::imshow("traj", grey+ renderTrajectory(hf));
+		cv::imshow("traj", renderTrajectory(hf));
 		//profiler.Log("Display");
 		profiler.Report();
 	}

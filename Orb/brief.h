@@ -1,9 +1,9 @@
 #pragma once
 #ifndef BRIEF_H
 #define BRIEF_H
-#include <opencv2\core.hpp>
+#include <opencv2/core.hpp>
 #include <vector>
-
+#include <immintrin.h>
 namespace BRIEF 
 {
 

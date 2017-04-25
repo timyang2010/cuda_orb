@@ -1,6 +1,6 @@
 #pragma once
 #include "brief.h"
-#include <opencv2\core.hpp>
+#include <opencv2/core.hpp>
 #include <iostream>
 #include <vector>
 #include <intrin.h>

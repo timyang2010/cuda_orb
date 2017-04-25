@@ -1,8 +1,6 @@
 #include "Orb.h"
 #include "FAST.cuh"
 
-#include <arrayfire.h> 
-using namespace af;
 Orb::Orb()
 {
 
