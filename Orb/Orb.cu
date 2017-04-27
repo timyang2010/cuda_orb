@@ -1,6 +1,6 @@
 #include "Orb.h"
 #include "FAST.cuh"
-
+#include "Profiler.h"
 Orb::Orb()
 {
 
@@ -19,15 +19,18 @@ std::vector<float4> Orb::fast(cuArray<uchar>& ibuffer, cuArray<uchar>& aux, int 
 	cv::Mat auxmat = cv::Mat(width, height, CV_8UC1);
 	FAST << < dim3(width / FAST_TILE, height / FAST_TILE), dim3(FAST_TILE, FAST_TILE) >> > (ibuffer, aux, thres, arc_length, width, height);
 	aux.download(auxmat.data);
-	for (uint i = padding; i < width - padding; ++i)
-		for (uint j = padding; j < height - padding; ++j)
+	int x = padding + padding*width;
+	for (uint i = padding; i < height - padding; ++i,x += padding * 2)
+	{
+		for (uint j = padding; j < width - padding; ++j,++x)
 		{
-			uint cvalue = auxmat.data[i + j*width];
+			uint cvalue = auxmat.data[x];
 			if (cvalue > 0)
 			{
-				corners.push_back({ (float)i,(float)j,0,0 });
+				corners.push_back({ (float)j,(float)i,0,0 });
 			}
 		}
+	}
 	if (supression)
 	{
 		AngleMap.upload(corners.data(), corners.size());
