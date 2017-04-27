@@ -8,16 +8,10 @@
     <CudaCompile Include="Orb.cu">
       <Filter>Orb</Filter>
     </CudaCompile>
-    <CudaCompile Include="Orb_Fast.cu">
-      <Filter>Orb</Filter>
-    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FAST.cuh">
       <Filter>Fast</Filter>
-    </ClInclude>
-    <ClInclude Include="brief.h">
-      <Filter>BRIEF</Filter>
     </ClInclude>
     <ClInclude Include="Orb.h">
       <Filter>Orb</Filter>
@@ -27,6 +21,9 @@
     </ClInclude>
     <ClInclude Include="Memory.h">
       <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="BRIEF.h">
+      <Filter>BRIEF</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -50,12 +47,11 @@
     <ClCompile Include="rBRIEF.cpp">
       <Filter>BRIEF</Filter>
     </ClCompile>
-    <ClCompile Include="train_brief.cpp" />
-    <ClCompile Include="BRIEF_LSH.cpp">
-      <Filter>BRIEF</Filter>
-    </ClCompile>
     <ClCompile Include="Profiler.cpp">
       <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="BRIEF_Matcher.cpp">
+      <Filter>BRIEF</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

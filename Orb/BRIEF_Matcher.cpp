@@ -1,4 +1,4 @@
-#include "brief.h"
+#include "BRIEF.h"
 using namespace std;
 using namespace cv;
 namespace BRIEF

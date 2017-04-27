@@ -168,7 +168,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
-      <CodeGeneration>compute_30,sm_30</CodeGeneration>
+      <CodeGeneration>compute_50,sm_50</CodeGeneration>
       <Include>$(OPENCV)\include</Include>
     </CudaCompile>
     <ProjectReference>
@@ -180,10 +180,9 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <CudaCompile Include="FAST.cu" />
     <CudaCompile Include="kernel.cu" />
     <CudaCompile Include="Orb.cu" />
-    <CudaCompile Include="Orb_Fast.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="brief.h" />
+    <ClInclude Include="BRIEF.h" />
     <ClInclude Include="FAST.cuh" />
     <ClInclude Include="Memory.h" />
     <ClInclude Include="Orb.h" />
@@ -191,10 +190,9 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BRIEF.cpp" />
-    <ClCompile Include="BRIEF_LSH.cpp" />
+    <ClCompile Include="BRIEF_Matcher.cpp" />
     <ClCompile Include="Profiler.cpp" />
     <ClCompile Include="rBRIEF.cpp" />
-    <ClCompile Include="train_brief.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

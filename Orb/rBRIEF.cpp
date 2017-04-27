@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "brief.h"
+#include "BRIEF.h"
 #include <opencv2/core.hpp>
 #include <iostream>
 #include <vector>
@@ -29,28 +29,6 @@ namespace BRIEF
 	{
 
 	}
-	/*void rBRIEF::generateLUT(std::vector<BRIEF::BinaryTest> tests, const int _angleCount);
-	{
-		angleCount = num_angle;
-
-		double delta = 2 * M_PI / num_angle;
-		double ang = 0;
-		for (int i = 0; i < num_angle; ++i, ang += delta)
-		{
-			double _sin = sin(ang);
-			double _cos = cos(ang);
-			vector<int> x;
-			vector<int> y;
-			vector<BRIEF::BinaryTest> test;
-			for (int j = 0; j < count; ++j)
-			{
-				x.push_back((double)xp[j] * _cos - (double)yp[j] * _sin);
-				y.push_back((double)(xp[j]) * _sin + (double)yp[j] * _cos);				
-			}
-			lutx.push_back(x);
-			luty.push_back(y);
-		}
-	}*/
 	void rBRIEF::generateLUT(vector<BRIEF::BinaryTest> tests, const int angleCount)
 	{
 		double delta = 2 * M_PI / angleCount;

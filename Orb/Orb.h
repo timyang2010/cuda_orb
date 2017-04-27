@@ -1,7 +1,7 @@
 #pragma once
 #include "cuda_runtime.h"
 #include "Memory.h"
-#include "brief.h"
+#include "BRIEF.h"
 #include <vector>
 #include <opencv2/opencv.hpp>
 #define CORNER_LIMIT 500000

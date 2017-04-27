@@ -1,12 +1,10 @@
-﻿#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
+﻿
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
+#include <thread>
 #include "Profiler.h"
 #include "Memory.h"
-#include "FAST.cuh"
 #include "Orb.h"
-#include <thread>
 using namespace cv;
 using namespace std;
 
@@ -31,7 +29,6 @@ Mat renderTrajectory(Mat& iframe)
 int main(int argc,char** argv)
 {
 	const int padding = 50;
-	const string dir = "\\\\140.118.7.213\\Dataset\\sequence\\13.mp4";
 	BRIEF::rBRIEF extractor;
 	Orb orb;
 	Profiler profiler;
@@ -39,7 +36,7 @@ int main(int argc,char** argv)
 	namedWindow("traj", WINDOW_NORMAL);
 	resizeWindow("traj", 1280, 720);
 	moveWindow("traj", 50, 50);
-	cap.open(dir);
+	cap.open(argv[1]);
 	if (!cap.isOpened())
 	{
 		return -1;
