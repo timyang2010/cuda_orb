@@ -76,6 +76,7 @@ int main(int argc,char** argv)
 			angles.push_back(corners[i].z);
 		}
 
+
 		profiler.Start();
 		BRIEF::BRIEF::Features features = extractor.extractFeature(grey2d, keypoints,angles, frameWidth, frameHeight);
 		profiler.Log("BRIEF");
