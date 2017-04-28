@@ -23,6 +23,7 @@ Mat renderTrajectory(Mat& iframe)
 			rframe += history[i]/(hframe_count-i);
 		}
 	}
+
 	return rframe;
 }
 

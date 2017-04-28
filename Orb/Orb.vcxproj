@@ -184,6 +184,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   <ItemGroup>
     <ClInclude Include="BRIEF.h" />
     <ClInclude Include="FAST.cuh" />
+    <ClInclude Include="imagestream.h" />
     <ClInclude Include="Memory.h" />
     <ClInclude Include="Orb.h" />
     <ClInclude Include="Profiler.h" />
@@ -191,6 +192,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   <ItemGroup>
     <ClCompile Include="BRIEF.cpp" />
     <ClCompile Include="BRIEF_Matcher.cpp" />
+    <ClCompile Include="imagestream.cpp" />
     <ClCompile Include="Profiler.cpp" />
     <ClCompile Include="rBRIEF.cpp" />
   </ItemGroup>
