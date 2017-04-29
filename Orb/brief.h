@@ -128,7 +128,7 @@ namespace BRIEF
 		std::vector<BRIEF::BinaryTest> Optimize(int length = BRIEF_DEFAULT_TEST_COUNT);
 
 		//utility function, compute variance of given BRIEF::Feature set
-		double variance(std::vector<BRIEF::Feature>& features);
+		double computeVariance(std::vector<BRIEF::Feature>& features);
 		class candidate
 		{
 		public:

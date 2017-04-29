@@ -72,7 +72,7 @@ protected:
 	T* device_ptr;
 	int size;
 };
-
+//convert pointer to double pointer with respect to width and height
 template<typename T> T** convert2D(T* in, unsigned int width, unsigned int height)
 {
 	T** a = new T*[height];

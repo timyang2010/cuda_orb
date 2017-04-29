@@ -27,9 +27,21 @@ Mat renderTrajectory(Mat& iframe)
 	return rframe;
 }
 
+vector<Orb::Feature> TrackKeypoints(Mat& frame,Orb& orb)
+{
+	Mat grey;
+	cvtColor(frame, grey, CV_BGR2GRAY);
+	uchar** grey2d = convert2D(grey.data, grey.cols, grey.rows);
+	vector<float4> corners = orb.detectKeypoints(grey, 25, 12, 1500);
+	vector<Orb::Feature> features = orb.extractFeatures(grey2d, corners);
+	return features;
+}
+
+
 int main(int argc,char** argv)
 {
 	Orb orb;
+	BRIEF::Optimizer optimizer;
 	Profiler profiler;
 	VideoCapture cap; 	
 	namedWindow("traj", WINDOW_NORMAL);
@@ -41,56 +53,25 @@ int main(int argc,char** argv)
 		return -1;
 	}
 	Mat frame;
-	cap.read(frame);
-	Mat grey = Mat(frame.rows, frame.cols, CV_8UC1);	
-	int frameWidth = frame.cols, frameHeight = frame.rows;
-	int frameSize = frameWidth*frameHeight;
-	uchar** grey2d = convert2D(grey.data, frameWidth, frameHeight);
-	cuArray<uchar> gpuInputBuffer(frameSize), gpuOutputBuffer(frameSize);
+	Mat tframe = Mat(frame.rows,frame.cols,frame.type());
 	vector<Orb::Feature> features_old;
-	
 	for (int fc = 0; waitKey(1)==-1; ++fc)
 	{
 		if (!cap.read(frame))break;
-		cvtColor(frame, grey, CV_BGR2GRAY);	
-		gpuInputBuffer.upload(grey.data);
-		
-		profiler.Start();	
-		std::thread first([&]{ boxFilter(grey, grey, -1, Size(5, 5)); });
-		vector<float4> corners = orb.detectKeypoints(gpuInputBuffer, gpuOutputBuffer, 30, 9, frameWidth, frameHeight);
-		
-		orb.computeOrientation(gpuInputBuffer, corners, frameWidth, frameHeight);
-
-		first.join();
-		profiler.Log("Keypoint");
-		vector<Point2d> keypoints;
-		vector<float> angles;
-		for (int i = 0; i < corners.size(); ++i)
-		{			
-			keypoints.push_back(Point2d(corners[i].x, corners[i].y)); 
-			angles.push_back(corners[i].z);
+		vector<Orb::Feature> features = TrackKeypoints(frame, orb);
+		for (vector<Orb::Feature>::iterator it = features.begin(); it < features.end(); ++it)
+		{
+			circle(frame, it->position, 2, Scalar(155, 255, 125), 1);
 		}
-		profiler.Log("transfer");
-		vector<Orb::Feature> features = orb.extractFeatures(grey2d, keypoints,angles);
-		profiler.Log("BRIEF");
-
-		Mat hf(frameHeight, frameWidth, CV_8UC1);
-		profiler.Start();
-		
-		BRIEF::MultiLSHashTable ht;
-		ht.InsertRange(features);	
-		profiler.Log("Hash_Build");
-		auto mpairs = ht.Hash_Match(features_old,30);
-
-		profiler.Log("Hash_Match");
-		for (auto v : mpairs)
-			line(hf, v.first, v.second, Scalar(255), 1, cv::LineTypes::LINE_AA);
+		BRIEF::MultiLSHashTable hs;
+		hs.InsertRange(features);
+		if (features_old.size() > 0)
+		{
+			for (auto mp : hs.Hash_Match(features_old))
+				line(frame, mp.first, mp.second, Scalar(255, 255, 225), 1, cv::LineTypes::LINE_AA);
+		}
 		features_old = features;
-		profiler.Log("Render");
-		
-		cv::imshow("traj",grey+ renderTrajectory(hf));
-		//profiler.Log("Display");
-		profiler.Report();
+		imshow("traj",frame);
 	}
 	return 0;
 }
