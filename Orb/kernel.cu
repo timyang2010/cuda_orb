@@ -29,8 +29,6 @@ Mat renderTrajectory(Mat& iframe)
 
 int main(int argc,char** argv)
 {
-	const int padding = 50;
-	BRIEF::rBRIEF extractor;
 	Orb orb;
 	Profiler profiler;
 	VideoCapture cap; 	
@@ -49,25 +47,22 @@ int main(int argc,char** argv)
 	int frameSize = frameWidth*frameHeight;
 	uchar** grey2d = convert2D(grey.data, frameWidth, frameHeight);
 	cuArray<uchar> gpuInputBuffer(frameSize), gpuOutputBuffer(frameSize);
-	BRIEF::BRIEF::Features features_old;
+	vector<Orb::Feature> features_old;
 	
 	for (int fc = 0; waitKey(1)==-1; ++fc)
 	{
 		if (!cap.read(frame))break;
-		if (fc % 2 == 0)continue;
 		cvtColor(frame, grey, CV_BGR2GRAY);	
 		gpuInputBuffer.upload(grey.data);
 		
 		profiler.Start();	
-		std::thread first([&]
-		{
-			boxFilter(grey, grey, -1, Size(5, 5));
-		});
-		vector<float4> corners = orb.fast(gpuInputBuffer, gpuOutputBuffer, 30, 9, frameWidth, frameHeight);
+		std::thread first([&]{ boxFilter(grey, grey, -1, Size(5, 5)); });
+		vector<float4> corners = orb.detectKeypoints(gpuInputBuffer, gpuOutputBuffer, 30, 9, frameWidth, frameHeight);
+		
 		orb.computeOrientation(gpuInputBuffer, corners, frameWidth, frameHeight);
-		first.join();
-		profiler.Log("FAST");
 
+		first.join();
+		profiler.Log("Keypoint");
 		vector<Point2d> keypoints;
 		vector<float> angles;
 		for (int i = 0; i < corners.size(); ++i)
@@ -75,23 +70,21 @@ int main(int argc,char** argv)
 			keypoints.push_back(Point2d(corners[i].x, corners[i].y)); 
 			angles.push_back(corners[i].z);
 		}
-
-
-		profiler.Start();
-		BRIEF::BRIEF::Features features = extractor.extractFeature(grey2d, keypoints,angles, frameWidth, frameHeight);
+		profiler.Log("transfer");
+		vector<Orb::Feature> features = orb.extractFeatures(grey2d, keypoints,angles);
 		profiler.Log("BRIEF");
 
 		Mat hf(frameHeight, frameWidth, CV_8UC1);
 		profiler.Start();
 		
-		BRIEF::matcher::MultiLSHashTable ht;
+		BRIEF::MultiLSHashTable ht;
 		ht.InsertRange(features);	
 		profiler.Log("Hash_Build");
 		auto mpairs = ht.Hash_Match(features_old,30);
 
 		profiler.Log("Hash_Match");
 		for (auto v : mpairs)
-			line(hf, v.first, v.second, Scalar(255), 0.5, cv::LineTypes::LINE_AA);
+			line(hf, v.first, v.second, Scalar(255), 1, cv::LineTypes::LINE_AA);
 		features_old = features;
 		profiler.Log("Render");
 		

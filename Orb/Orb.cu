@@ -1,7 +1,7 @@
 #include "Orb.h"
 #include "FAST.cuh"
 #include "Profiler.h"
-Orb::Orb()
+Orb::Orb() : rBRIEF()
 {
 
 }
@@ -13,7 +13,7 @@ void Orb::computeOrientation(cuArray<unsigned char>& frame, std::vector<float4>&
 	AngleMap.download(corners.data(), cc);
 }
 
-std::vector<float4> Orb::fast(cuArray<uchar>& ibuffer, cuArray<uchar>& aux, int thres, const int arc_length, const int width, const int height, const bool supression, const int padding)
+std::vector<float4> Orb::detectKeypoints(cuArray<uchar>& ibuffer, cuArray<uchar>& aux, int thres, const int arc_length, const int width, const int height, const bool supression, const int padding)
 {
 	std::vector<float4> corners;
 	cv::Mat auxmat = cv::Mat(width, height, CV_8UC1);
@@ -39,7 +39,7 @@ std::vector<float4> Orb::fast(cuArray<uchar>& ibuffer, cuArray<uchar>& aux, int 
 		std::sort(corners.begin(), corners.end(), [](float4& c1, float4& c2) {
 			return c1.w > c2.w;
 		});
-		int minc = corners.size() >= 4000 ? 4000 : corners.size();
+		int minc = corners.size() >= 1000 ? 1000 : corners.size();
 		std::vector<float4> strong = std::vector<float4>(corners.begin(), corners.begin() + minc);
 		return strong;
 	}
@@ -50,3 +50,4 @@ std::vector<float4> Orb::fast(cuArray<uchar>& ibuffer, cuArray<uchar>& aux, int 
 
 
 }
+

@@ -45,35 +45,10 @@ namespace BRIEF
 		}
 		return tests;
 	}
-	BRIEF::Features BRIEF::extractFeature(uint8_t* image, vector<Point2d>& positions, const int width, const int height)  const
+
+	std::vector<BRIEF::Feature> BRIEF::extractFeatures(uint8_t** image, vector<Point2d>& positions)  const
 	{
-		int size = width*height;
-		BRIEF::Features features;
-		#pragma omp parallel for
-		for (int p = 0; p < positions.size(); ++p)
-		{
-			Feature f;
-			int bitpos = 0;
-			vector<Point2d>::iterator it = positions.begin() + p;
-			for (vector<BinaryTest>::const_iterator i = _tests.begin(); i != _tests.end(); ++i)
-			{
-				int x1 = it->x + i->x1; int y1 = it->y + i->y1;
-				int x2 = it->x + i->x2; int y2 = it->y + i->y2;
-				int stp = y1*width + x1;
-				int edp = y2*width + x2;
-				if (stp > 0 && stp < size && edp>0 && edp < size)
-					f.setbit(bitpos, image[stp] > image[edp]);
-				++bitpos;
-			}
-			f.position = (*it);
-			features[p] = f;
-		}
-		return features;
-	}
-	BRIEF::Features BRIEF::extractFeature(uint8_t** image, vector<Point2d>& positions, const int width, const int height)  const
-	{
-		int size = width*height;
-		BRIEF::Features features(positions.size());
+		std::vector<BRIEF::Feature> features(positions.size());
 		#pragma omp parallel for
 		for (int p = 0; p < positions.size(); ++p)
 		{
@@ -82,12 +57,9 @@ namespace BRIEF
 			vector<Point2d>::iterator it = positions.begin()+p;
 			for (vector<BinaryTest>::const_iterator i = _tests.begin(); i != _tests.end(); ++i)
 			{
-				if (it->x > 16 && it->x < width - 16 && it->y>16 && it->y < height - 16)
-				{
-					int x1 = it->x + i->x1; int y1 = it->y + i->y1;
-					int x2 = it->x + i->x2; int y2 = it->y + i->y2;
-					f.setbit(bitpos, image[y1][x1] > image[y2][x2]);
-				}
+				int x1 = it->x + i->x1; int y1 = it->y + i->y1;
+				int x2 = it->x + i->x2; int y2 = it->y + i->y2;
+				f.setbit(bitpos, image[y1][x1] > image[y2][x2]);
 				++bitpos;
 			}
 			f.position = (*it);

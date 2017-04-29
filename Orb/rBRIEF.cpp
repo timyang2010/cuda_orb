@@ -50,9 +50,9 @@ namespace BRIEF
 	{
 		return std::vector<BRIEF::BinaryTest>(lut[i]);
 	}
-	BRIEF::Features rBRIEF::extractFeature(uint8_t** image, std::vector<cv::Point2d>& positions, const int width, const int height) const
+	std::vector<BRIEF::Feature> rBRIEF::extractFeatures(uint8_t** image, std::vector<cv::Point2d>& positions) const
 	{
-		Features features = Features(positions.size());
+		std::vector<BRIEF::Feature> features = std::vector<BRIEF::Feature>(positions.size());
 		int length = positions.size();
 		#pragma omp parallel for
 		for (int i = 0; i < length; ++i)
@@ -74,9 +74,9 @@ namespace BRIEF
 		return features;
 	}
 
-	BRIEF::Features rBRIEF::extractFeature(uint8_t** image, std::vector<cv::Point2d>& positions, vector<float>& angles, const int width, const int height) const
+	std::vector<BRIEF::Feature> rBRIEF::extractFeatures(uint8_t** image, std::vector<cv::Point2d>& positions, vector<float>& angles) const
 	{
-		Features features = Features(positions.size());
+		std::vector<BRIEF::Feature> features = std::vector<BRIEF::Feature>(positions.size());
 		int length = positions.size();
 		#pragma omp parallel for
 		for (int i = 0; i < length; ++i)
