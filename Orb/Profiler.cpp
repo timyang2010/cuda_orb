@@ -51,7 +51,8 @@ void Profiler::Report()
 		logs.pop();
 	}
 	cout << "sum:" << sum << "us  ";
-	cout << '\r';
+	//cout << '\r';
+	cout << endl;
 }
 
 

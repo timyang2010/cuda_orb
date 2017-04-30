@@ -62,7 +62,7 @@ std::vector<float4> Orb::detectKeypoints(cv::Mat& grey, int thres, const int arc
 	return corners;
 }
 
-std::vector<BRIEF::BRIEF::Feature> Orb::extractFeatures(uint8_t** image, std::vector<float4> keypoints) const
+std::vector<BRIEF::BRIEF::Feature> Orb::extractFeatures(uint8_t** image, std::vector<float4> keypoints,MODE mode) const
 {
 	std::vector<cv::Point2d> corners;
 	std::vector<float> angles;
@@ -71,6 +71,9 @@ std::vector<BRIEF::BRIEF::Feature> Orb::extractFeatures(uint8_t** image, std::ve
 		corners.push_back(cv::Point2d(keypoints[i].x, keypoints[i].y));
 		angles.push_back(keypoints[i].z);
 	}
-	return rBRIEF::extractFeatures(image, corners, angles);
-}
+	if(mode == MODE::MODE_RBRIEF)
+		return rBRIEF::extractFeatures(image, corners, angles);
+	else
+		return BRIEF::extractFeatures(image, corners);
 
+}

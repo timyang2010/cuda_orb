@@ -25,9 +25,6 @@
     <ClInclude Include="BRIEF.h">
       <Filter>BRIEF</Filter>
     </ClInclude>
-    <ClInclude Include="imagestream.h">
-      <Filter>utility</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Fast">
@@ -55,9 +52,6 @@
     </ClCompile>
     <ClCompile Include="BRIEF_Matcher.cpp">
       <Filter>BRIEF</Filter>
-    </ClCompile>
-    <ClCompile Include="imagestream.cpp">
-      <Filter>utility</Filter>
     </ClCompile>
     <ClCompile Include="BRIEF_Optimizer.cpp">
       <Filter>BRIEF</Filter>
