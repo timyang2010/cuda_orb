@@ -51,7 +51,7 @@ namespace TestEnumerator
                 DirectoryInfo di = new DirectoryInfo(fbd.SelectedPath);
                 using (StreamWriter file = new StreamWriter(metafilename))
                 {
-                    foreach (var fi in di.GetFiles().Where(f => f.Extension == ".jpg"))
+                    foreach (var fi in di.GetFiles().Where(f => f.Extension == ".ppm"))
                     {
                         file.WriteLine(fi.FullName);
                     }
@@ -61,7 +61,7 @@ namespace TestEnumerator
           
 
             Console.WriteLine("\n------------------------------------\nProcess Complete");
-            File.Delete(metafilename);
+            //File.Delete(metafilename);
             Console.ReadLine();
         }
 

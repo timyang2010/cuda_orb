@@ -19,6 +19,7 @@ namespace BRIEF
 
 		BRIEF();
 		BRIEF(int S);
+		BRIEF(std::vector<BinaryTest> ts);
 		virtual std::vector<Feature> extractFeatures(uint8_t** image, std::vector<cv::Point2d>& positions) const;
 		unsigned int DistanceBetween(Feature& f1, Feature& f2) const;
 
@@ -49,7 +50,6 @@ namespace BRIEF
 
 	protected:
 		int size;
-		virtual void GenerateBinaryTests(int* x, int* y, const int count, const int dim);
 		std::vector<BRIEF::BinaryTest> GenerateBinaryTests(const int count, const int dim);
 	private:
 		std::vector<BRIEF::BinaryTest> _tests;
@@ -121,8 +121,8 @@ namespace BRIEF
 	public:
 		class candidate;
 		Optimizer();
-		void extractFeatures(uint8_t** image, std::vector<cv::Point2d>& positions);
-		void extractFeatures(uint8_t** image, std::vector<cv::Point2d>& positions, std::vector<float>& angles);
+		void extractFeatures(uint8_t** image, std::vector<cv::Point2f>& positions);
+		void extractFeatures(uint8_t** image, std::vector<cv::Point2f>& positions, std::vector<float>& angles);
 
 		//returns a set of optimized BRIEF tests based on input keypoints
 		std::vector<BRIEF::BinaryTest> Optimize(int length = BRIEF_DEFAULT_TEST_COUNT);
@@ -132,20 +132,26 @@ namespace BRIEF
 		class candidate
 		{
 		public:
+			candidate(BRIEF::BinaryTest _test)
+			{
+				test = _test;
+			}
 			BRIEF::BinaryTest test;
-			std::vector<bool> testResult;
-			int rank;
+			std::vector<unsigned short> testResult;
+			void computeRank();
+			double rank;
 		};
+		void generateTests(int windowSize = BRIEF_DEFAULT_WINDOW_SIZE, int subWindowSize = 5);
+		std::vector<candidate> candidates;
 	protected:
 		//encapsulate metadata for a single binary test and its test results
 		
-		void generateTests(int windowSize = BRIEF_DEFAULT_WINDOW_SIZE, int subWindowSize = 5);
+		
 		double correlation(candidate& c1, candidate& c2);
 		//sort candidates by their distance to mean
-		void sort(double mean = 0.5f);
 		//compute absolute correlation between to binary tests			
 	private:
-		std::vector<candidate> candidates;
+		
 	};
 
 }

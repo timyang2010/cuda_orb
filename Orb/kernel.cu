@@ -34,7 +34,7 @@ vector<Orb::Feature> TrackKeypoints(Mat& frame,Orb& orb)
 	cvtColor(frame, grey, CV_BGR2GRAY);
 	uchar** grey2d = convert2D(grey.data, grey.cols, grey.rows);
 	vector<float4> corners = orb.detectKeypoints(grey, 25, 12, 1500);
-	vector<Orb::Feature> features = orb.extractFeatures(grey2d, corners,Orb::MODE::MODE_RBRIEF);
+	vector<Orb::Feature> features = orb.extractFeatures(grey2d, corners,Orb::MODE::MODE_BRIEF);
 	return features;
 }
 
@@ -76,22 +76,31 @@ void BRIEF_Optimize(char* p)
 	Orb orb;
 	BRIEF::Optimizer optimizer;
 	vector<Orb::Feature> features;
-	for (;getline(f, path);)
+	optimizer.generateTests();
+	for (; getline(f, path);)
 	{
 		cout << path << endl;
 		Mat m = imread(path);
+		Mat grey;
+		cvtColor(m, grey, CV_BGR2GRAY);
+		uchar** grey2d = convert2D(grey.data, grey.cols, grey.rows);
+		vector<float4> corners = orb.detectKeypoints(grey, 25, 12, 1500);
+		vector<Point2f> poi;
+		for (auto c : corners)poi.push_back(Point2f(c.x, c.y));
+		optimizer.extractFeatures(grey2d, poi);
+
 		imshow("n", m);
 		waitKey(5);
-		vector<Orb::Feature> fs = TrackKeypoints(m,orb);
-		features.insert(features.end(), fs.begin(), fs.end());
 	}
+	optimizer.Optimize();
 	f.close();
-	cout << optimizer.computeVariance(features);
+
 }
 
 int main(int argc,char** argv)
 {
 	BRIEF_Optimize(argv[1]);
+
 	
 	return 0;
 }

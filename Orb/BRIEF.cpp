@@ -21,14 +21,11 @@ namespace BRIEF
 		_tests = GenerateBinaryTests(BRIEF_DEFAULT_TEST_COUNT, S);
 		//GenerateBinaryTests(xp, yp, 512, S);
 	}
-	void BRIEF::GenerateBinaryTests(int* x, int* y, const int count, const int dim)
+	BRIEF::BRIEF(vector<BRIEF::BinaryTest> ts)
 	{
-		int radius = dim / 2;
-		for (int i = 0; i < count; ++i)
-		{
-			x[i] = rand() % dim - radius;
-			y[i] = rand() % dim - radius;
-		}
+		size = BRIEF_DEFAULT_WINDOW_SIZE;
+		_tests = ts;
+		//GenerateBinaryTests(xp, yp, 512, S);
 	}
 	vector<BRIEF::BinaryTest> BRIEF::GenerateBinaryTests(const int count, const int dim)
 	{
