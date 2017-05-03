@@ -38,33 +38,39 @@ vector<Orb::Feature> TrackKeypoints(Mat& frame,Orb& orb)
 	return features;
 }
 
-void TrackCamera(char* arg)
+void TrackCamera(string arg)
 {
 	Orb orb;
 	BRIEF::Optimizer optimizer;
 	Profiler profiler;
 	VideoCapture cap;
 	Mat frame;
+
 	namedWindow("traj", WINDOW_NORMAL);
 	resizeWindow("traj", 1280, 720);
 	moveWindow("traj", 50, 50);
+
 	cap.open(arg);
 	if (!cap.isOpened())
 		return;
 	vector<Orb::Feature> features_old;
+
+	
 	for (int fc = 0; waitKey(1) == -1; ++fc)
 	{
 		if (!cap.read(frame))break;
+		Mat tframe(frame.rows, frame.cols, CV_8UC1);
 		vector<Orb::Feature> features = TrackKeypoints(frame, orb);
 		if (features_old.size() > 0)
 		{
 			BRIEF::MultiLSHashTable hs;
 			hs.InsertRange(features);
-			for (auto mp : hs.Hash_Match(features_old))
-				line(frame, mp.first, mp.second, Scalar(255, 255, 225), 1, cv::LineTypes::LINE_AA);
+			for (auto mp : hs.Hash_Match(features_old,64))
+				line(tframe, mp.first, mp.second, Scalar(255, 255, 225), 1, cv::LineTypes::LINE_AA);
 		}
 		features_old = features;
-		imshow("traj", frame);
+	
+		imshow("traj", renderTrajectory(tframe));
 	}
 }
 
@@ -99,8 +105,20 @@ void BRIEF_Optimize(char* p)
 
 int main(int argc,char** argv)
 {
-	BRIEF_Optimize(argv[1]);
+	string path;
+	switch (argv[1][0])
+	{
+	case 't':
+		BRIEF_Optimize(argv[2]);
+		break;
+	case 'c':
+		fstream f(argv[2]);
+		for (; getline(f, path);)
+		{
+			TrackCamera(path);
+		}
+		break;
 
-	
+	}
 	return 0;
 }

@@ -44,19 +44,18 @@ namespace TestEnumerator
         {
             const string metafilename = "meta.txt";
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            
+            OpenFileDialog ofd = new OpenFileDialog() { Multiselect = true };
 
-            while(fbd.ShowDialog() == DialogResult.OK)
+            while(ofd.ShowDialog() == DialogResult.OK)
             {
-                DirectoryInfo di = new DirectoryInfo(fbd.SelectedPath);
                 using (StreamWriter file = new StreamWriter(metafilename))
                 {
-                    foreach (var fi in di.GetFiles().Where(f => f.Extension == ".ppm"))
+                    foreach (var fi in ofd.FileNames)
                     {
-                        file.WriteLine(fi.FullName);
+                        file.WriteLine(fi);
                     }
                 }
-                StartProcess(metafilename);
+                StartProcess(string.Format("c {0}",metafilename));
             }
           
 
