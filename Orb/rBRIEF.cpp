@@ -25,6 +25,11 @@ namespace BRIEF
 		size = S;
 		generateLUT(BRIEF::GenerateBinaryTests(count, size),sBRIEF_DEFAULT_LUT_SIZE);
 	}
+	rBRIEF::rBRIEF(vector<BRIEF::BinaryTest> tests)
+	{
+		size = BRIEF_DEFAULT_WINDOW_SIZE * 2;
+		generateLUT(tests, sBRIEF_DEFAULT_LUT_SIZE);
+	}
 	rBRIEF::~rBRIEF()
 	{
 

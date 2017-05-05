@@ -1,6 +1,7 @@
 #include "BRIEF.h"
 #include <math.h>
 #include <iostream>
+#include "Profiler.h"
 using namespace std;
 namespace BRIEF
 {
@@ -18,21 +19,45 @@ namespace BRIEF
 			candidate c = candidates[i];	
 			for (std::vector<cv::Point2f>::iterator p = positions.begin(); p < positions.end(); ++p)
 			{
-				int x1 = p->x + c.test.x1; int y1 = p->y + c.test.y1;
-				int x2 = p->x + c.test.x2; int y2 = p->y + c.test.y2;
+				int x1 = p->x + c.tests[0].x1; int y1 = p->y + c.tests[0].y1;
+				int x2 = p->x + c.tests[0].x2; int y2 = p->y + c.tests[0].y2;
 				candidates[i].testResult.push_back(image[y1][x1] > image[y2][x2] ? 1 : 0);
 			}
 		}
 
 	}
 	void Optimizer::extractFeatures(uint8_t** image, std::vector<cv::Point2f>& positions, std::vector<float>& angles)
-	{
+	{	
+	#pragma omp parallel for
+		for (int i = 0; i < candidates.size(); ++i)
+		{
+			candidate c = candidates[i];
+			for (int j = 0; j < positions.size(); ++j)
+			{
+				int x1 = positions[j].x + c.tests[angles[j]].x1; int y1 = positions[j].y + c.tests[angles[j]].y1;
+				int x2 = positions[j].x + c.tests[angles[j]].x2; int y2 = positions[j].y + c.tests[angles[j]].y2;
+				candidates[i].testResult.push_back(image[y1][x1] > image[y2][x2] ? 1 : 0);
+			}
+		}
+	}
 
+	bool Optimizer::checkCorrelation(candidate& c1,vector<candidate>& v, double thres)
+	{
+		for (vector<candidate>::iterator jt = v.begin(); jt < v.end(); ++jt)
+		{
+			if (abs(correlation(c1, *jt)) > thres)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	//returns a set of optimized BRIEF tests based on input keypoints
 	std::vector<BRIEF::BinaryTest> Optimizer::Optimize(int length)
 	{
+		const int tolerance = 8;
+
 		#pragma omp parallel for
 		for (int i = 0; i < candidates.size(); ++i)
 		{
@@ -41,11 +66,43 @@ namespace BRIEF
 		std::sort(candidates.begin(), candidates.end(), [](candidate& c1, candidate& c2) -> bool {
 			return c1.rank > c2.rank;
 		});
-		std::vector<BRIEF::BinaryTest> v;
-		v.push_back(candidates[0].test);
+		/*for (auto c : candidates)
+		{
+			cout << c.testResult.size() << endl;
+		}*/
+		std::vector<candidate> v;
+		for (int i = 0; i < 1000; ++i)
+		{
+			cout << correlation(candidates[10000], candidates[i]) << endl;
+		}
 		//greedy search algorithm
-
-		return v;
+		double thres = 0.3;
+		const double velocity = 0.05;
+		double learning_rate = 1;
+		vector<BRIEF::BinaryTest> tests;
+		for (;v.size()<256 || v.size()>256 + tolerance;)
+		{	
+			v.clear();
+			v.push_back(candidates[0]);
+			int iters = 0;
+			for (vector<candidate>::iterator it = candidates.begin() + 1; it < candidates.end(); ++it,++iters)
+			{
+				if (checkCorrelation(*it, v, thres))
+				{
+					v.push_back(*it);
+				}
+				if (v.size() > 255) break;
+				cout << '\r'<<iters<<" "<<v.size()<< "/256    ";
+			}
+			thres += velocity;
+			cout << endl<< "achieved: " << v.size() << "/256  " << "threshold:" << thres<< " l_rate:"<< learning_rate << endl;
+		}
+		cout << "training complete" << endl;
+		for (int i = 0; i < 256; ++i)
+		{
+			tests.push_back(v[i].tests[0]);
+		}
+		return tests;
 	}
 	double Optimizer::computeVariance(std::vector<BRIEF::Feature>& features)
 	{
@@ -91,32 +148,65 @@ namespace BRIEF
 	}
 	double Optimizer::correlation(candidate& c1, candidate& c2)
 	{
-		double sxx, syy, sxy;
-		double mean_x, mean_y;
+		double mean_x = c1.mean(), mean_y=c2.mean();
+		double length = (double)c1.testResult.size();
+		double cov = 0;
 		for (int i = 0; i < c1.testResult.size(); ++i)
 		{
-			mean_x += c1.testResult[i];
-			mean_y += c2.testResult[i];
+			cov += (c1.testResult[i] - mean_x)* (c2.testResult[i] - mean_y);
 		}
-		mean_x /= c1.testResult.size();
-		mean_y /= c2.testResult.size();
-
-		for (int i = 0; i < c1.testResult.size(); ++i)
+		cov /= length;
+		return cov/(c1.stddev()*c2.stddev());
+	}
+	double Optimizer::candidate::mean()
+	{
+	
+		if (_mean == -1)
 		{
-			sxx += pow(c1.testResult[i] - mean_x, 2);
-			syy += pow(c2.testResult[i] - mean_y, 2);
-			sxy += (c1.testResult[i] - mean_x)*(c2.testResult[i] - mean_y);
+			double m = 0;
+			for (vector<unsigned short>::iterator it = testResult.begin(); it < testResult.end(); ++it)
+			{
+				m += (double)*it;
+			}
+			_mean = m / testResult.size();
 		}
-		return sxy / (sxx*syy);
+		return _mean;
+	}
+	double Optimizer::candidate::stddev()
+	{
+		if (_stddev == -1)
+		{
+			double u = mean();
+			double s = 0;
+			for (vector<unsigned short>::iterator it = testResult.begin(); it < testResult.end(); ++it)
+			{
+				s += pow((double)(*it) - u,2);
+			}
+			_stddev = sqrt(s/testResult.size());
+		}
+		return _stddev;
 	}
 	void Optimizer::candidate::computeRank()
 	{
 		double sum = 0;
 		for (int i=0;i<testResult.size();++i)
 		{
-			sum += double(testResult[i]);
+			sum += double(0.5 - testResult[i]);
 		}
-		this->rank = abs(0.5 - sum / testResult.size());
+		this->rank = abs(sum / testResult.size());
+	}
+
+	Optimizer::candidate::candidate(BRIEF::BinaryTest _test)
+	{
+		double delta = 2 * 3.141596f / sBRIEF_DEFAULT_LUT_SIZE;
+		double ang = 0;
+		for (int i = 0; i <sBRIEF_DEFAULT_LUT_SIZE; ++i, ang += delta)
+		{
+			double _sin = sin(ang);
+			double _cos = cos(ang);
+			tests.push_back(_test.Rotate(_cos, _sin));
+		}
+		
 	}
 
 }

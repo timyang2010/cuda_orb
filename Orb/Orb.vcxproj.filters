@@ -8,6 +8,9 @@
     <CudaCompile Include="Orb.cu">
       <Filter>Orb</Filter>
     </CudaCompile>
+    <CudaCompile Include="BRIEF_Optimize.cu">
+      <Filter>BRIEF</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FAST.cuh">
@@ -25,6 +28,7 @@
     <ClInclude Include="BRIEF.h">
       <Filter>BRIEF</Filter>
     </ClInclude>
+    <ClInclude Include="Tracking.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Fast">
@@ -56,5 +60,6 @@
     <ClCompile Include="BRIEF_Optimizer.cpp">
       <Filter>BRIEF</Filter>
     </ClCompile>
+    <ClCompile Include="Tracking.cpp" />
   </ItemGroup>
 </Project>

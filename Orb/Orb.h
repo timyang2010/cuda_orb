@@ -1,14 +1,18 @@
 #pragma once
+#ifndef ORB_H
+#define ORB_H
 #include "cuda_runtime.h"
 #include "Memory.h"
 #include "BRIEF.h"
 #include <vector>
+#include <fstream>
 #include <opencv2/opencv.hpp>
 #define CORNER_LIMIT 500000
 class Orb : public BRIEF::rBRIEF
 {
 public:
 	Orb();
+	Orb(std::vector<BRIEF::BinaryTest> tests) : rBRIEF(tests){ }
 	enum MODE;
 
 	//compute orientation of keypoints using intensity centroid method
@@ -29,3 +33,8 @@ private:
 	cuArray<float4> AngleMap = cuArray<float4>(CORNER_LIMIT);
 	
 };
+
+Orb loadPattern(char* filename);
+
+
+#endif

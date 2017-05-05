@@ -69,6 +69,7 @@ namespace BRIEF
 		rBRIEF();
 		rBRIEF(int S);
 		rBRIEF(int S, int count);
+		rBRIEF(std::vector<BinaryTest> ts);
 		~rBRIEF();
 		//indexer to obtain underlying BRIEF test pattern
 		std::vector<BRIEF::BinaryTest> operator [](int i) const;
@@ -132,21 +133,23 @@ namespace BRIEF
 		class candidate
 		{
 		public:
-			candidate(BRIEF::BinaryTest _test)
-			{
-				test = _test;
-			}
-			BRIEF::BinaryTest test;
+			candidate(BRIEF::BinaryTest _test);
+			double mean();
+			double stddev();
+			std::vector<BRIEF::BinaryTest> tests;
 			std::vector<unsigned short> testResult;
 			void computeRank();
 			double rank;
+		private:
+			double _mean = -1;
+			double _stddev = -1;
 		};
 		void generateTests(int windowSize = BRIEF_DEFAULT_WINDOW_SIZE, int subWindowSize = 5);
 		std::vector<candidate> candidates;
 	protected:
 		//encapsulate metadata for a single binary test and its test results
 		
-		
+		bool checkCorrelation(candidate& c1, std::vector<candidate>& c2,double thres);
 		double correlation(candidate& c1, candidate& c2);
 		//sort candidates by their distance to mean
 		//compute absolute correlation between to binary tests			
