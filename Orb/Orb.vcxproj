@@ -178,9 +178,8 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="BRIEF_Optimize.cu" />
     <CudaCompile Include="FAST.cu" />
-    <CudaCompile Include="kernel.cu" />
+    <CudaCompile Include="main.cpp" />
     <CudaCompile Include="Orb.cu" />
   </ItemGroup>
   <ItemGroup>
@@ -189,7 +188,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClInclude Include="Memory.h" />
     <ClInclude Include="Orb.h" />
     <ClInclude Include="Profiler.h" />
-    <ClInclude Include="Tracking.h" />
+    <ClInclude Include="Application.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BRIEF.cpp" />
@@ -197,7 +196,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClCompile Include="BRIEF_Optimizer.cpp" />
     <ClCompile Include="Profiler.cpp" />
     <ClCompile Include="rBRIEF.cpp" />
-    <ClCompile Include="Tracking.cpp" />
+    <ClCompile Include="Application.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

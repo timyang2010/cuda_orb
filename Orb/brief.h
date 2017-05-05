@@ -59,7 +59,6 @@ namespace BRIEF
 	{
 	private:
 		std::vector< std::vector<BRIEF::BinaryTest> > lut;
-		//std::vector< std::vector<int> > luty;
 	protected:
 		int angleCount;
 		virtual void generateLUT(std::vector<BRIEF::BinaryTest> tests, const int _angleCount);

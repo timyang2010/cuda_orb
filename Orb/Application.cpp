@@ -1,15 +1,56 @@
 #pragma once
-
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
-#include <thread>
 #include "Profiler.h"
 #include "Memory.h"
-#include "Orb.h"
-#include <sstream>
 #include <fstream>
+#include "Application.h"
 using namespace cv;
 using namespace std;
+
+void BRIEF_Optimize(string path_dict)
+{
+	string path;
+	fstream f(path_dict);
+	Orb orb;
+	BRIEF::Optimizer optimizer;
+	vector<Orb::Feature> features;
+	optimizer.generateTests();
+	for (; getline(f, path);)
+	{
+		cout << path << endl;
+		Mat m = imread(path);
+		Mat grey;
+		cvtColor(m, grey, CV_BGR2GRAY);
+		uchar** grey2d = convert2D(grey.data, grey.cols, grey.rows);
+		vector<float4> corners = orb.detectKeypoints(grey, 25, 12, 500);
+		vector<Point2f> poi;
+		vector<float> angles;
+		for (auto c : corners)
+		{
+			poi.push_back(Point2f(c.x, c.y));
+			angles.push_back(c.z);
+		}
+		optimizer.extractFeatures(grey2d, poi, angles);
+	}
+	f.close();
+	auto bts = optimizer.Optimize();
+	Mat m = Mat::zeros(512, 512, CV_8UC1);
+	fstream of("pat.txt",ios::out);
+	for (auto t : bts)
+	{
+		line(m, Point2f(t.x1 * 16 + 256, t.y1 * 16 + 256), Point2f(t.x2 * 16 + 256, t.y2 * 16 + 256), Scalar(255), 1, cv::LINE_AA);
+		cout << (int)t.x1 << " " << (int)t.y1 << "   " << (int)t.x2 << " " << (int)t.y2 << endl;
+	}
+	imshow("result", m);
+	waitKey();
+	for (auto t : bts)
+	{
+		of << (int)t.x1 << " " << (int)t.y1 << " " << (int)t.x2 << " " << (int)t.y2 << " ";
+	}
+	of.close();
+}
+
 Mat renderTrajectory(Mat& iframe)
 {
 	const int hframe_count = 8;
@@ -57,7 +98,6 @@ void TrackCamera(string arg, Orb orb)
 		Mat grey;
 		cvtColor(frame, grey, CV_BGR2GRAY);
 		vector<Orb::Feature> features = TrackKeypoints(frame, orb);
-		cout << opt.computeVariance(features);
 		if (features_old.size() > 0)
 		{
 			BRIEF::MultiLSHashTable hs;

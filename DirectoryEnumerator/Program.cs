@@ -15,7 +15,7 @@ namespace TestEnumerator
         {
             if (!String.IsNullOrEmpty(e.Data))
             {
-                Console.WriteLine(e.Data);
+                Console.Write('\r'+e.Data+"                                  ");
             }
         }
 

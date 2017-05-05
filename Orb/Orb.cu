@@ -79,7 +79,7 @@ std::vector<BRIEF::BRIEF::Feature> Orb::extractFeatures(uint8_t** image, std::ve
 }
 
 
-Orb loadPattern(char* filename)
+Orb Orb::fromFile(char* filename)
 {
 	std::fstream f(filename);
 	cv::Mat mp = cv::Mat::zeros(512, 512, CV_8UC1);

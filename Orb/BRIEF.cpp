@@ -19,13 +19,11 @@ namespace BRIEF
 	{
 		size = S;
 		_tests = GenerateBinaryTests(BRIEF_DEFAULT_TEST_COUNT, S);
-		//GenerateBinaryTests(xp, yp, 512, S);
 	}
 	BRIEF::BRIEF(vector<BRIEF::BinaryTest> ts)
 	{
 		size = BRIEF_DEFAULT_WINDOW_SIZE;
 		_tests = ts;
-		//GenerateBinaryTests(xp, yp, 512, S);
 	}
 	vector<BRIEF::BinaryTest> BRIEF::GenerateBinaryTests(const int count, const int dim)
 	{

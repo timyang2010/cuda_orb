@@ -66,18 +66,9 @@ namespace BRIEF
 		std::sort(candidates.begin(), candidates.end(), [](candidate& c1, candidate& c2) -> bool {
 			return c1.rank > c2.rank;
 		});
-		/*for (auto c : candidates)
-		{
-			cout << c.testResult.size() << endl;
-		}*/
 		std::vector<candidate> v;
-		for (int i = 0; i < 1000; ++i)
-		{
-			cout << correlation(candidates[10000], candidates[i]) << endl;
-		}
-		//greedy search algorithm
-		double thres = 0.3;
-		const double velocity = 0.05;
+		double thres = 0.4;
+		const double velocity = 0.02;
 		double learning_rate = 1;
 		vector<BRIEF::BinaryTest> tests;
 		for (;v.size()<256 || v.size()>256 + tolerance;)
@@ -94,8 +85,9 @@ namespace BRIEF
 				if (v.size() > 255) break;
 				cout << '\r'<<iters<<" "<<v.size()<< "/256    ";
 			}
+			
+			cout << endl<< "achieved: " << v.size() << "/256  " << "threshold:" << thres<< endl;
 			thres += velocity;
-			cout << endl<< "achieved: " << v.size() << "/256  " << "threshold:" << thres<< " l_rate:"<< learning_rate << endl;
 		}
 		cout << "training complete" << endl;
 		for (int i = 0; i < 256; ++i)
@@ -129,6 +121,7 @@ namespace BRIEF
 		int bound = windowSize - padding;
 		int radius = bound / 2;
 		vector<BRIEF::BinaryTest> tests;
+
 		vector<cv::Point2i> tps;
 		for (int i = 0; i < bound; ++i)
 		{
@@ -141,7 +134,14 @@ namespace BRIEF
 		{
 			for (int j = i+1; j < tps.size(); ++j)
 			{
-				candidates.push_back(candidate({ int8_t(tps[i].x),int8_t(tps[i].y), int8_t(tps[j].x), int8_t(tps[j].y) }));
+				tests.push_back({ int8_t(tps[i].x),int8_t(tps[i].y), int8_t(tps[j].x), int8_t(tps[j].y) });
+			}
+		}
+		for (vector<BRIEF::BinaryTest>::iterator it = tests.begin(); it < tests.end(); ++it)
+		{
+			if (abs(it->x1 - it->x2) > 5 || abs(it->y1 - it->y2) >5)
+			{
+				candidates.push_back(candidate(*it));
 			}
 		}
 		std::cout <<"generated " << candidates.size() <<" tests"<< endl;

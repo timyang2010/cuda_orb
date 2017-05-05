@@ -1,16 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CudaCompile Include="kernel.cu" />
     <CudaCompile Include="FAST.cu">
       <Filter>Fast</Filter>
     </CudaCompile>
     <CudaCompile Include="Orb.cu">
       <Filter>Orb</Filter>
     </CudaCompile>
-    <CudaCompile Include="BRIEF_Optimize.cu">
-      <Filter>BRIEF</Filter>
-    </CudaCompile>
+    <CudaCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FAST.cuh">
@@ -28,7 +25,7 @@
     <ClInclude Include="BRIEF.h">
       <Filter>BRIEF</Filter>
     </ClInclude>
-    <ClInclude Include="Tracking.h" />
+    <ClInclude Include="Application.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Fast">
@@ -60,6 +57,6 @@
     <ClCompile Include="BRIEF_Optimizer.cpp">
       <Filter>BRIEF</Filter>
     </ClCompile>
-    <ClCompile Include="Tracking.cpp" />
+    <ClCompile Include="Application.cpp" />
   </ItemGroup>
 </Project>

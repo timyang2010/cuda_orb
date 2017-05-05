@@ -23,7 +23,7 @@ public:
 	std::vector<float4> detectKeypoints(cv::Mat& frame, int thres, const int arc_length, const int limit = 1000, const int padding = 45);
 	//compute rBRIEF descriptors given a set of keypoints
 	std::vector<Feature> extractFeatures(uint8_t** image, std::vector<float4> keypoints, MODE track_orientation = MODE_RBRIEF) const;
-
+	static Orb fromFile(char* filename);
 	enum MODE
 	{
 		MODE_BRIEF,
@@ -34,7 +34,7 @@ private:
 	
 };
 
-Orb loadPattern(char* filename);
+
 
 
 #endif
