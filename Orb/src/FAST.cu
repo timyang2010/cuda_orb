@@ -157,10 +157,14 @@ __global__ void ComputeOrientation(unsigned char* __restrict__ inputImage, float
 	{
 		for (int j = -w; j <= w; ++j)
 		{
-			float value = (float)(inputImage[c + wh + j]);
-			sumx[tid] += value*i;
-			sumy[tid] += value*j;
-			sum[tid] += value;
+			if (i*i + j*j < 361)
+			{
+				float value = (float)(inputImage[c + wh + j]);
+				sumx[tid] += value*i;
+				sumy[tid] += value*j;
+				sum[tid] += value;
+			}
+			
 		}
 	}
 	int cx = x + sumx[tid] / sum[tid];

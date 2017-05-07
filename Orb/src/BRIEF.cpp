@@ -20,7 +20,7 @@ namespace BRIEF
 		size = S;
 		_tests = GenerateBinaryTests(BRIEF_DEFAULT_TEST_COUNT, S);
 	}
-	BRIEF::BRIEF(vector<BRIEF::BinaryTest> ts)
+	BRIEF::BRIEF(vector<BRIEF::BinaryTest>& ts)
 	{
 		size = BRIEF_DEFAULT_WINDOW_SIZE;
 		_tests = ts;
@@ -93,13 +93,17 @@ namespace BRIEF
 
 	BRIEF::BinaryTest BRIEF::BinaryTest::Rotate(double _cos,double _sin) const
 	{
-		double _x1 = x1*_cos - y1*_sin;
-		double _y1 = x1*_sin + y1*_cos;
-		double _x2 = x2*_cos - y2*_sin;
-		double _y2 = x2*_sin + y2*_cos;
+		double _x1 = (double)x1*_cos - (double)y1*_sin;
+		double _y1 = (double)x1*_sin + (double)y1*_cos;
+		double _x2 = (double)x2*_cos - (double)y2*_sin;
+		double _y2 = (double)x2*_sin + (double)y2*_cos;
 		return BinaryTest{(int8_t)_x1,(int8_t)_y1,(int8_t)_x2,(int8_t)_y2};
 	}
-
+	std::ostream& operator<<(std::ostream& os, const BRIEF::BinaryTest& dt)
+	{
+		os << (int)dt.x1 << " " << (int)dt.y1 << " " << (int)dt.x2 << " " << (int)dt.y2 << " ";
+		return os;
+	}
 	
 	ostream& operator<<(ostream& os, const BRIEF::Feature& f)
 	{

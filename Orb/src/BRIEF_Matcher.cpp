@@ -97,7 +97,7 @@ namespace BRIEF
 		vector< int > rs(f1.size());
 		if (f2.size() > 0)
 		{
-#pragma omp parallel for
+			#pragma omp parallel for
 			for (int i = 0; i < f1.size(); ++i)
 			{
 				unsigned int min = INT_MAX;
@@ -119,13 +119,17 @@ namespace BRIEF
 				{
 					rs[i] = minj;
 				}
+				else
+				{
+					rs[i] = -1;
+				}
 			}
 			for (int i = 0; i < rs.size(); ++i)
 			{
 				int j = rs[i];
-				if (rs[i] > 0)
+				if (j >= 0)
 				{
-					result.push_back(pair<Point2f, Point2f>(f2[j].position, f1[i].position));
+					result.push_back(pair<Point2f, Point2f>(f1[i].position, f2[j].position));
 				}
 			}
 		}

@@ -15,7 +15,7 @@ namespace TestEnumerator
         {
             if (!String.IsNullOrEmpty(e.Data))
             {
-                Console.Write('\r'+e.Data+"                                  ");
+                Console.WriteLine(e.Data);
             }
         }
 
@@ -42,25 +42,13 @@ namespace TestEnumerator
         [STAThread]
         static void Main(string[] args)
         {
-            const string metafilename = "meta.txt";
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             OpenFileDialog ofd = new OpenFileDialog() { Multiselect = true };
-
             while(ofd.ShowDialog() == DialogResult.OK)
             {
-                using (StreamWriter file = new StreamWriter(metafilename))
-                {
-                    foreach (var fi in ofd.FileNames)
-                    {
-                        file.WriteLine(fi);
-                    }
-                }
-                StartProcess(string.Format("c {0}",metafilename));
+                StartProcess(string.Format("r {0}", string.Concat(ofd.FileNames.Select(fi => fi + " "))));
             }
-          
-
             Console.WriteLine("\n------------------------------------\nProcess Complete");
-            //File.Delete(metafilename);
             Console.ReadLine();
         }
 

@@ -1,31 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CudaCompile Include="FAST.cu">
+    <CudaCompile Include="main.cpp" />
+    <CudaCompile Include="src\FAST.cu">
       <Filter>Fast</Filter>
     </CudaCompile>
-    <CudaCompile Include="Orb.cu">
+    <CudaCompile Include="src\Orb.cu">
       <Filter>Orb</Filter>
     </CudaCompile>
-    <CudaCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FAST.cuh">
-      <Filter>Fast</Filter>
+    <ClInclude Include="include\BRIEF.h" />
+    <ClInclude Include="include\Memory.h">
+      <Filter>utility</Filter>
     </ClInclude>
-    <ClInclude Include="Orb.h">
+    <ClInclude Include="include\Orb.h">
       <Filter>Orb</Filter>
     </ClInclude>
-    <ClInclude Include="Profiler.h">
+    <ClInclude Include="include\Profiler.h">
       <Filter>utility</Filter>
-    </ClInclude>
-    <ClInclude Include="Memory.h">
-      <Filter>utility</Filter>
-    </ClInclude>
-    <ClInclude Include="BRIEF.h">
-      <Filter>BRIEF</Filter>
     </ClInclude>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="include\FAST.cuh">
+      <Filter>Fast</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Fast">
@@ -40,23 +38,26 @@
     <Filter Include="utility">
       <UniqueIdentifier>{fe02b567-fefe-4103-abfd-f726fd8c17ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{0fb4ec74-c35d-4fdf-adc3-57751e2a5589}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BRIEF.cpp">
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="src\rBRIEF.cpp">
       <Filter>BRIEF</Filter>
     </ClCompile>
-    <ClCompile Include="rBRIEF.cpp">
+    <ClCompile Include="src\BRIEF_Optimizer.cpp">
       <Filter>BRIEF</Filter>
     </ClCompile>
-    <ClCompile Include="Profiler.cpp">
+    <ClCompile Include="src\BRIEF_Matcher.cpp">
+      <Filter>BRIEF</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BRIEF.cpp">
+      <Filter>BRIEF</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Profiler.cpp">
       <Filter>utility</Filter>
     </ClCompile>
-    <ClCompile Include="BRIEF_Matcher.cpp">
-      <Filter>BRIEF</Filter>
-    </ClCompile>
-    <ClCompile Include="BRIEF_Optimizer.cpp">
-      <Filter>BRIEF</Filter>
-    </ClCompile>
-    <ClCompile Include="Application.cpp" />
   </ItemGroup>
 </Project>

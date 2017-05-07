@@ -139,7 +139,7 @@ namespace BRIEF
 		}
 		for (vector<BRIEF::BinaryTest>::iterator it = tests.begin(); it < tests.end(); ++it)
 		{
-			if (abs(it->x1 - it->x2) > 5 || abs(it->y1 - it->y2) >5)
+			if (abs(it->x1 - it->x2) > 4 || abs(it->y1 - it->y2) > 4)
 			{
 				candidates.push_back(candidate(*it));
 			}

@@ -72,12 +72,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OPENCV)\include;$(AF_PATH)\include;$(ISD)\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OPENCV)\include;$(ProjectDir)\include</IncludePath>
     <ReferencePath>$(OPENCV)/x64/vc14/bin;$(ReferencePath)</ReferencePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(OPENCV)\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OPENCV)\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(OPENCV)\include;$(ProjectDir)\include</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(OPENCV)\lib</LibraryPath>
     <ReferencePath>$(OPENCV)/x64/vc14/bin;$(ReferencePath)</ReferencePath>
   </PropertyGroup>
@@ -148,7 +148,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -170,7 +170,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <CodeGeneration>compute_50,sm_50</CodeGeneration>
-      <Include>$(OPENCV)\include</Include>
     </CudaCompile>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -178,24 +177,24 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="FAST.cu" />
+    <CudaCompile Include="src\FAST.cu" />
     <CudaCompile Include="main.cpp" />
-    <CudaCompile Include="Orb.cu" />
+    <CudaCompile Include="src\Orb.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BRIEF.h" />
-    <ClInclude Include="FAST.cuh" />
-    <ClInclude Include="Memory.h" />
-    <ClInclude Include="Orb.h" />
-    <ClInclude Include="Profiler.h" />
+    <ClInclude Include="include\BRIEF.h" />
+    <ClInclude Include="include\FAST.cuh" />
+    <ClInclude Include="include\Memory.h" />
+    <ClInclude Include="include\Orb.h" />
+    <ClInclude Include="include\Profiler.h" />
     <ClInclude Include="Application.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BRIEF.cpp" />
-    <ClCompile Include="BRIEF_Matcher.cpp" />
-    <ClCompile Include="BRIEF_Optimizer.cpp" />
-    <ClCompile Include="Profiler.cpp" />
-    <ClCompile Include="rBRIEF.cpp" />
+    <ClCompile Include="src\BRIEF.cpp" />
+    <ClCompile Include="src\BRIEF_Matcher.cpp" />
+    <ClCompile Include="src\BRIEF_Optimizer.cpp" />
+    <ClCompile Include="src\Profiler.cpp" />
+    <ClCompile Include="src\rBRIEF.cpp" />
     <ClCompile Include="Application.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

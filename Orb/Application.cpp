@@ -8,22 +8,20 @@
 using namespace cv;
 using namespace std;
 
-void BRIEF_Optimize(string path_dict)
+void BRIEF_Optimize(int argc, char** argv)
 {
-	string path;
-	fstream f(path_dict);
 	Orb orb;
 	BRIEF::Optimizer optimizer;
 	vector<Orb::Feature> features;
 	optimizer.generateTests();
-	for (; getline(f, path);)
+	for (int i=2;i<argc;++i)
 	{
-		cout << path << endl;
-		Mat m = imread(path);
+		cout << argv[i] << endl;
+		Mat m = imread(argv[i]);
 		Mat grey;
 		cvtColor(m, grey, CV_BGR2GRAY);
 		uchar** grey2d = convert2D(grey.data, grey.cols, grey.rows);
-		vector<float4> corners = orb.detectKeypoints(grey, 25, 12, 500);
+		vector<float4> corners = orb.detectKeypoints(grey, 25, 12, 1500);
 		vector<Point2f> poi;
 		vector<float> angles;
 		for (auto c : corners)
@@ -33,7 +31,6 @@ void BRIEF_Optimize(string path_dict)
 		}
 		optimizer.extractFeatures(grey2d, poi, angles);
 	}
-	f.close();
 	auto bts = optimizer.Optimize();
 	Mat m = Mat::zeros(512, 512, CV_8UC1);
 	fstream of("pat.txt",ios::out);
@@ -46,7 +43,7 @@ void BRIEF_Optimize(string path_dict)
 	waitKey();
 	for (auto t : bts)
 	{
-		of << (int)t.x1 << " " << (int)t.y1 << " " << (int)t.x2 << " " << (int)t.y2 << " ";
+		of << (int)t.x1 << " " << (int)t.y1 << " " << (int)t.x2 << " " << (int)t.y2 << endl;
 	}
 	of.close();
 }
@@ -68,17 +65,18 @@ Mat renderTrajectory(Mat& iframe)
 	return rframe;
 }
 
-vector<Orb::Feature> TrackKeypoints(Mat& frame, Orb& orb)
+vector<Orb::Feature> TrackKeypoints(Mat& frame, Orb& orb,Orb::MODE mode,int max_keypoints)
 {
 	Mat grey;
 	cvtColor(frame, grey, CV_BGR2GRAY);
 	uchar** grey2d = convert2D(grey.data, grey.cols, grey.rows);
-	vector<float4> corners = orb.detectKeypoints(grey, 25, 12, 1500);
-	vector<Orb::Feature> features = orb.extractFeatures(grey2d, corners, Orb::MODE::MODE_BRIEF);
+	vector<float4> corners = orb.detectKeypoints(grey, 25, 12, max_keypoints);
+	vector<Orb::Feature> features = orb.extractFeatures(grey2d, corners,mode);
 	return features;
 }
-void TrackCamera(string arg, Orb orb)
+void TrackCamera(string arg)
 {
+	Orb orb = Orb::fromFile("C:\\Users\\timya\\Desktop\\Orb\\x64\\Release\\pat.txt");
 	Profiler profiler;
 	VideoCapture cap;
 	Mat frame;
@@ -97,16 +95,19 @@ void TrackCamera(string arg, Orb orb)
 		Mat tframe(frame.rows, frame.cols, CV_8UC1);
 		Mat grey;
 		cvtColor(frame, grey, CV_BGR2GRAY);
-		vector<Orb::Feature> features = TrackKeypoints(frame, orb);
+		vector<Orb::Feature> features = TrackKeypoints(frame, orb,Orb::MODE_RBRIEF);
 		if (features_old.size() > 0)
 		{
 			BRIEF::MultiLSHashTable hs;
 			hs.InsertRange(features);
-			for (auto mp : hs.Hash_Match(features_old, 32))
+			for (auto mp : hs.Hash_Match(features_old, 64))
+			{
+				if(pow(mp.first.x-mp.second.x,2)+pow(mp.first.y-mp.second.y,2)<10000)
 				line(tframe, mp.first, mp.second, Scalar(255, 255, 225), 1, cv::LineTypes::LINE_AA);
+			}
+				
 		}
 		features_old = features;
-
 		imshow("traj", grey / 2 + renderTrajectory(tframe));
 	}
 }

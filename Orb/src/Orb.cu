@@ -81,15 +81,14 @@ std::vector<BRIEF::BRIEF::Feature> Orb::extractFeatures(uint8_t** image, std::ve
 
 Orb Orb::fromFile(char* filename)
 {
-	std::fstream f(filename);
-	cv::Mat mp = cv::Mat::zeros(512, 512, CV_8UC1);
+	std::cout << std::string(filename);
+	std::fstream f(filename,std::ios::in);
 	int x1, x2, y1, y2;
 	std::vector<BRIEF::BRIEF::BinaryTest> bp;
 	while (f >> x1 >> y1 >> x2 >> y2)
 	{
 		bp.push_back({ (int8_t)x1,(int8_t)y1,(int8_t)x2,(int8_t)y2 });
-		line(mp, cv::Point2f(x1 * 16 + 256, y1 * 16 + 256), cv::Point2f(x2 * 16 + 256, y2 * 16 + 256), cv::Scalar(255), 1, cv::LINE_AA);
+		std::cout << x1 << " " << y1 << " " << x2 << " " << y2 << std::endl;
 	}
-	cv::imshow("pattern", mp);
 	return Orb(bp);
 }

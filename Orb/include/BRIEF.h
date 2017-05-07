@@ -19,7 +19,7 @@ namespace BRIEF
 
 		BRIEF();
 		BRIEF(int S);
-		BRIEF(std::vector<BinaryTest> ts);
+		BRIEF(std::vector<BinaryTest>& ts);
 		virtual std::vector<Feature> extractFeatures(uint8_t** image, std::vector<cv::Point2d>& positions) const;
 		unsigned int DistanceBetween(Feature& f1, Feature& f2) const;
 
@@ -46,6 +46,7 @@ namespace BRIEF
 			int8_t x2;
 			int8_t y2;
 			BinaryTest Rotate(double _cos, double _sin)  const;
+			friend std::ostream& operator<<(std::ostream& os, const BinaryTest& dt);
 		};
 
 	protected:
@@ -68,7 +69,7 @@ namespace BRIEF
 		rBRIEF();
 		rBRIEF(int S);
 		rBRIEF(int S, int count);
-		rBRIEF(std::vector<BinaryTest> ts);
+		rBRIEF(std::vector<BinaryTest>& ts);
 		~rBRIEF();
 		//indexer to obtain underlying BRIEF test pattern
 		std::vector<BRIEF::BinaryTest> operator [](int i) const;
