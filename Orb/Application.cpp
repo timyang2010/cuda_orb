@@ -13,7 +13,7 @@ void BRIEF_Optimize(int argc, char** argv)
 	Orb orb;
 	BRIEF::Optimizer optimizer;
 	vector<Orb::Feature> features;
-	optimizer.generateTests();
+	optimizer.generateTests(31,5,4);
 	for (int i=2;i<argc;++i)
 	{
 		cout << argv[i] << endl;

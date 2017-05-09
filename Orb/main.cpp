@@ -23,12 +23,12 @@ Point2f _rotate(Point2f p, double deg, Point2f center)
 
 void match_keypoints(string n1, string n2)
 {
-	Orb orb = Orb();
+	Orb orb = Orb::fromFile("C:\\Users\\timya\\Desktop\\Orb\\x64\\Release\\pat.txt");
 	Mat m1 = imread(n1);
 	Mat m2 = imread(n2);
 	auto f1 = TrackKeypoints(m1, orb, Orb::MODE_RBRIEF, 1000);
 	auto f2 = TrackKeypoints(m2, orb, Orb::MODE_RBRIEF, 1000);
-	auto pairs = BRIEF::MatchBF(f1, f2, 30);
+	auto pairs = BRIEF::MatchBF(f1, f2, 45);
 	Mat fr(max(m1.rows,m2.rows), m1.cols + m2.cols, m1.type());
 	m1.copyTo(fr(Rect2d(0, 0, m1.cols, m1.rows)));
 	m2.copyTo(fr(Rect2d(m1.cols, 0, m2.cols, m2.rows)));
@@ -105,40 +105,42 @@ vector<float> vector_reduce_mean(vector<vector<float>>& v)
 void experiment(int argc, char** argv)
 {
 	
-	Orb orb2 = Orb::fromFile("C:\\Users\\timya\\Desktop\\Orb\\x64\\Release\\pat.txt");
-	Orb orb1 = Orb();
+	Orb orb1 = Orb::fromFile("C:\\Users\\timya\\Desktop\\Orb\\x64\\Release\\pat.txt");
+	Orb orb2 = Orb();
 	Mat gr(512, 512, CV_8UC1);
 	Mat gr2(512, 512, CV_8UC1);
 	for (int i = 0; i < 256; ++i)
 	{
 		cout << orb1[0][i] << endl;
 		line(gr, Point2d(orb1[0][i].x1 * 6 + 256, orb1[0][i].y1 * 6 + 256), Point2d(orb1[0][i].x2 * 6 + 256, orb1[0][i].y2 * 6 + 256), Scalar(225), 1, LINE_AA);
-
 		line(gr2, Point2d(orb2[0][i].x1 * 6 + 256, orb2[0][i].y1 * 6 + 256), Point2d(orb2[0][i].x2 * 6 + 256, orb2[0][i].y2 * 6 + 256), Scalar(225), 1, LINE_AA);
 	}
+
 	imshow("orb1",gr);
 	imshow("orb2", gr2);
 	waitKey();
 
 	vector<vector<float>> crvector(120);
 
-	for (int md = 35; md < 65; md += 14)
+	for (int md = 35; md < 36; md += 14)
 	{
 		vector<vector<float>> r1;
 		vector<vector<float>> r2;
+		vector<vector<float>> r3;
 		for (int i = 2; i < argc; ++i)
 		{
-			r1.push_back(rotate_test(argv[i], orb1, md, Orb::MODE_RBRIEF));
-			//r2.push_back(rotate_test(argv[i], orb2, md, Orb::MODE_RBRIEF));
+			r1.push_back(rotate_test(argv[i], orb2, md, Orb::MODE_BRIEF));
+			r2.push_back(rotate_test(argv[i], orb2, md, Orb::MODE_RBRIEF));
+			r3.push_back(rotate_test(argv[i], orb1, md, Orb::MODE_RBRIEF));
 		}
 		vector<float> v1 = vector_reduce_mean(r1);
-		//vector<float> v2 = vector_reduce_mean(r2);
-
+		vector<float> v2 = vector_reduce_mean(r2);
+		vector<float> v3 = vector_reduce_mean(r3);
 		for (int i = 0; i < 120; ++i)
 		{
 			crvector[i].push_back(v1[i]);
-			
-			//crvector[i].push_back(v2[i]);
+			crvector[i].push_back(v2[i]);
+			crvector[i].push_back(v3[i]);
 		}
 		cout << md << endl;
 	}

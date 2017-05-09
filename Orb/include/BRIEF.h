@@ -144,7 +144,12 @@ namespace BRIEF
 			double _mean = -1;
 			double _stddev = -1;
 		};
-		void generateTests(int windowSize = BRIEF_DEFAULT_WINDOW_SIZE, int subWindowSize = BRIEF_DEFAULT_SUBWINDOW_SIZE, int min_distance = 4);
+		void generateTests(
+			int windowSize = BRIEF_DEFAULT_WINDOW_SIZE, 
+			int subWindowSize = BRIEF_DEFAULT_SUBWINDOW_SIZE, 
+			int min_distance = 4,
+			int distance_scale = 1
+		);
 		std::vector<candidate> candidates;
 	protected:
 		//encapsulate metadata for a single binary test and its test results

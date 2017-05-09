@@ -12,6 +12,7 @@ class Orb : public BRIEF::rBRIEF
 {
 public:
 	Orb();
+	Orb(int s) : rBRIEF(s){ }
 	Orb(std::vector<BRIEF::BinaryTest> tests) : rBRIEF(tests){ }
 	enum MODE;
 

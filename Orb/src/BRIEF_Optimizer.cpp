@@ -111,18 +111,18 @@ namespace BRIEF
 
 		return var / features.size();
 	}
-	void Optimizer::generateTests(int windowSize, int subWindowSize,const int min_distance)
+	void Optimizer::generateTests(int windowSize, int subWindowSize,int min_distance,int distance_scale)
 	{
 		int padding = subWindowSize - 1;
 		int bound = windowSize - padding;
 		int radius = bound / 2;
 		vector<BRIEF::BinaryTest> tests;
 		vector<cv::Point2i> tps;
-		for (int i = 0; i < bound; ++i)
+		for (int i = -radius; i <= radius; ++i)
 		{
-			for (int j = 0; j < bound; ++j)
+			for (int j = -radius; j < radius; ++j)
 			{
-				tps.push_back(cv::Point2i(i - radius, j - radius));
+				tps.push_back(cv::Point2i(i*distance_scale, j*distance_scale));
 			}
 		}
 		for (int i = 0; i < tps.size(); ++i)
@@ -132,9 +132,10 @@ namespace BRIEF
 				tests.push_back({ int8_t(tps[i].x),int8_t(tps[i].y), int8_t(tps[j].x), int8_t(tps[j].y) });
 			}
 		}
+		int dist = distance_scale*min_distance;
 		for (vector<BRIEF::BinaryTest>::iterator it = tests.begin(); it < tests.end(); ++it)
 		{
-			if (abs(it->x1 - it->x2) > min_distance || abs(it->y1 - it->y2) > min_distance)
+			if (abs(it->x1 - it->x2) > dist || abs(it->y1 - it->y2) > dist)
 			{
 				candidates.push_back(candidate(*it));
 			}
