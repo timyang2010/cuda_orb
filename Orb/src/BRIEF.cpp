@@ -17,12 +17,10 @@ namespace BRIEF
 	}
 	BRIEF::BRIEF(int S)
 	{
-		size = S;
 		_tests = GenerateBinaryTests(BRIEF_DEFAULT_TEST_COUNT, S);
 	}
 	BRIEF::BRIEF(vector<BRIEF::BinaryTest>& ts)
 	{
-		size = BRIEF_DEFAULT_WINDOW_SIZE;
 		_tests = ts;
 	}
 	vector<BRIEF::BinaryTest> BRIEF::GenerateBinaryTests(const int count, const int dim)
@@ -69,7 +67,7 @@ namespace BRIEF
 
 	BRIEF::Feature::Feature()
 	{
-		memset(value, 0, sizeof(int) * 8);
+		memset(value, 0, sizeof(int) * BRIEF_DEFAULT_WORDLENGTH);
 	}
 
 	int BRIEF::Feature::operator- (Feature& feature) const
@@ -77,10 +75,10 @@ namespace BRIEF
 		unsigned int sum_difeatures = 0;
 		union {
 			__m256 x;
-			unsigned int y[8];
+			unsigned int y[BRIEF_DEFAULT_WORDLENGTH];
 		};
 		x = _mm256_xor_ps(f_vect, feature.f_vect);
-		for (int i = 0; i < 8; ++i)
+		for (int i = 0; i < BRIEF_DEFAULT_WORDLENGTH; ++i)
 		{
 			sum_difeatures += __popcnt(y[i]);
 		}
@@ -107,7 +105,7 @@ namespace BRIEF
 	
 	ostream& operator<<(ostream& os, const BRIEF::Feature& f)
 	{
-		for (int i = 0; i < 8; ++i)
+		for (int i = 0; i < BRIEF_DEFAULT_WORDLENGTH; ++i)
 		{
 			os << bitset<32>(f.value[i]) << endl;
 		}

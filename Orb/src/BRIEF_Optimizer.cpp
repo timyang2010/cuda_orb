@@ -56,8 +56,6 @@ namespace BRIEF
 	//returns a set of optimized BRIEF tests based on input keypoints
 	std::vector<BRIEF::BinaryTest> Optimizer::Optimize(int length)
 	{
-		const int tolerance = 8;
-
 		#pragma omp parallel for
 		for (int i = 0; i < candidates.size(); ++i)
 		{
@@ -67,11 +65,10 @@ namespace BRIEF
 			return c1.rank > c2.rank;
 		});
 		std::vector<candidate> v;
-		double thres = 0.4;
-		const double velocity = 0.02;
-		double learning_rate = 1;
+		double thres = 0.3;
+		const double velocity = 0.03;
 		vector<BRIEF::BinaryTest> tests;
-		for (;v.size()<256 || v.size()>256 + tolerance;)
+		for (;v.size()<256;)
 		{	
 			v.clear();
 			v.push_back(candidates[0]);
@@ -85,7 +82,6 @@ namespace BRIEF
 				if (v.size() > 255) break;
 				cout << '\r'<<iters<<" "<<v.size()<< "/256    ";
 			}
-			
 			cout << endl<< "achieved: " << v.size() << "/256  " << "threshold:" << thres<< endl;
 			thres += velocity;
 		}
@@ -101,27 +97,26 @@ namespace BRIEF
 		double mean = 0,var = 0;
 		for (vector<BRIEF::Feature>::iterator f = features.begin(); f < features.end(); ++f)
 		{
-			for(int i=0;i<8;++i)
+			for(int i=0;i<BRIEF_DEFAULT_WORDLENGTH;++i)
 				mean += __popcnt(f->value[i]);
 		}
 		mean /= features.size();
 		for (vector<BRIEF::Feature>::iterator f = features.begin(); f < features.end(); ++f)
 		{
 			int sum = 0;
-			for (int i = 0; i<8; ++i)
+			for (int i = 0; i<BRIEF_DEFAULT_WORDLENGTH; ++i)
 				sum += __popcnt(f->value[i]);
 			var += pow(sum - mean,2);
 		}
 
 		return var / features.size();
 	}
-	void Optimizer::generateTests(int windowSize, int subWindowSize)
+	void Optimizer::generateTests(int windowSize, int subWindowSize,const int min_distance)
 	{
 		int padding = subWindowSize - 1;
 		int bound = windowSize - padding;
 		int radius = bound / 2;
 		vector<BRIEF::BinaryTest> tests;
-
 		vector<cv::Point2i> tps;
 		for (int i = 0; i < bound; ++i)
 		{
@@ -139,7 +134,7 @@ namespace BRIEF
 		}
 		for (vector<BRIEF::BinaryTest>::iterator it = tests.begin(); it < tests.end(); ++it)
 		{
-			if (abs(it->x1 - it->x2) > 4 || abs(it->y1 - it->y2) > 4)
+			if (abs(it->x1 - it->x2) > min_distance || abs(it->y1 - it->y2) > min_distance)
 			{
 				candidates.push_back(candidate(*it));
 			}
@@ -148,8 +143,8 @@ namespace BRIEF
 	}
 	double Optimizer::correlation(candidate& c1, candidate& c2)
 	{
-		double mean_x = c1.mean(), mean_y=c2.mean();
 		double length = (double)c1.testResult.size();
+		double mean_x = c1.mean(), mean_y=c2.mean();	
 		double cov = 0;
 		for (int i = 0; i < c1.testResult.size(); ++i)
 		{
@@ -160,7 +155,6 @@ namespace BRIEF
 	}
 	double Optimizer::candidate::mean()
 	{
-	
 		if (_mean == -1)
 		{
 			double m = 0;

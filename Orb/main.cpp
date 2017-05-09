@@ -49,7 +49,7 @@ void match_keypoints(string n1, string n2)
 	waitKey();
 }
 
-vector<float> rotate_test(string n1,Orb& orb,int max_distance)
+vector<float> rotate_test(string n1,Orb& orb,int max_distance,Orb::MODE mode)
 {
 	
 	Mat m1 = imread(n1);
@@ -60,9 +60,10 @@ vector<float> rotate_test(string n1,Orb& orb,int max_distance)
 		Point2f center = Point2f(m1.cols / 2, m1.rows / 2);
 		Mat rm = getRotationMatrix2D(center, i, 1);
 		warpAffine(m1, rm2, rm, Size2d(m1.cols, m1.rows));
-		auto f1 = TrackKeypoints(m1, orb, Orb::MODE_RBRIEF,100000);
-		auto f2 = TrackKeypoints(rm2, orb, Orb::MODE_RBRIEF,100000);
+		auto f1 = TrackKeypoints(m1, orb, mode,100000);
+		auto f2 = TrackKeypoints(rm2, orb, mode,100000);
 		auto pairs = BRIEF::MatchBF(f1, f2, max_distance);
+		cout << f1.size() + f2.size() << endl;
 		Mat fr(m1.rows, m1.cols + m1.cols, m1.type());
 		m1.copyTo(fr(Rect2d(0, 0, m1.cols, m1.rows)));
 		rm2.copyTo(fr(Rect2d(m1.cols, 0, m1.cols, m1.rows)));
@@ -76,13 +77,9 @@ vector<float> rotate_test(string n1,Orb& orb,int max_distance)
 			}
 		}
 		match_result.push_back((double)inlier / (double)pairs.size());
-		cout << i << " " << (double)inlier / (double)pairs.size() << endl;
 	}
 	return match_result;
 }
-
-
-
 vector<float>& vector_sum(vector<float>&v1, vector<float>&v2)
 {
 	for (int i = 0; i < v1.size(); ++i)
@@ -108,25 +105,52 @@ vector<float> vector_reduce_mean(vector<vector<float>>& v)
 void experiment(int argc, char** argv)
 {
 	
-	Orb orb1 = Orb::fromFile("C:\\Users\\timya\\Desktop\\Orb\\x64\\Release\\pat.txt");
-	Orb orb2 = Orb();
-	vector<vector<float>> r1;
-	vector<vector<float>> r2;
-	for (int i = 2; i < argc; ++i)
+	Orb orb2 = Orb::fromFile("C:\\Users\\timya\\Desktop\\Orb\\x64\\Release\\pat.txt");
+	Orb orb1 = Orb();
+	Mat gr(512, 512, CV_8UC1);
+	Mat gr2(512, 512, CV_8UC1);
+	for (int i = 0; i < 256; ++i)
 	{
-		r1.push_back(rotate_test(argv[i], orb1, 40));
+		cout << orb1[0][i] << endl;
+		line(gr, Point2d(orb1[0][i].x1 * 6 + 256, orb1[0][i].y1 * 6 + 256), Point2d(orb1[0][i].x2 * 6 + 256, orb1[0][i].y2 * 6 + 256), Scalar(225), 1, LINE_AA);
+
+		line(gr2, Point2d(orb2[0][i].x1 * 6 + 256, orb2[0][i].y1 * 6 + 256), Point2d(orb2[0][i].x2 * 6 + 256, orb2[0][i].y2 * 6 + 256), Scalar(225), 1, LINE_AA);
 	}
-	for (int i = 2; i < argc; ++i)
+	imshow("orb1",gr);
+	imshow("orb2", gr2);
+	waitKey();
+
+	vector<vector<float>> crvector(120);
+
+	for (int md = 35; md < 65; md += 14)
 	{
-		r2.push_back(rotate_test(argv[i], orb2, 40));
+		vector<vector<float>> r1;
+		vector<vector<float>> r2;
+		for (int i = 2; i < argc; ++i)
+		{
+			r1.push_back(rotate_test(argv[i], orb1, md, Orb::MODE_RBRIEF));
+			//r2.push_back(rotate_test(argv[i], orb2, md, Orb::MODE_RBRIEF));
+		}
+		vector<float> v1 = vector_reduce_mean(r1);
+		//vector<float> v2 = vector_reduce_mean(r2);
+
+		for (int i = 0; i < 120; ++i)
+		{
+			crvector[i].push_back(v1[i]);
+			
+			//crvector[i].push_back(v2[i]);
+		}
+		cout << md << endl;
 	}
-	vector<float> v1 = vector_reduce_mean(r1);
-	vector<float> v2 = vector_reduce_mean(r2);
+	
 	ofstream f("log.txt");
-	f << "rBRIEF" << " " << "random" << endl;
-	for (int i = 0; i < v1.size(); ++i)
+	for (int i = 0; i < crvector.size(); ++i)
 	{
-		f << v1[i] << " "<< v2[i] << endl;
+		for (vector<float>::iterator it = crvector[i].begin(); it != crvector[i].end(); ++it)
+		{
+			f << *it << " ";
+		}
+		f << endl;
 	}
 	f.close();
 }

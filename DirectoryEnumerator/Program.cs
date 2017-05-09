@@ -38,15 +38,34 @@ namespace TestEnumerator
             proc.Close();
         }
 
+        static Dictionary<string, string> reverseMap;
+
+        static Program()
+        {
+            reverseMap = new Dictionary<string, string>();
+            reverseMap.Add("track", "c");
+            reverseMap.Add("train", "t");
+            reverseMap.Add("benchmark", "r");
+            reverseMap.Add("match", "m");
+        }
 
         [STAThread]
         static void Main(string[] args)
         {
+            string se = Console.ReadLine();
+            if (!reverseMap.ContainsValue(se))
+            {
+                if(reverseMap.ContainsKey(se))
+                {
+                    se = reverseMap[se];
+                }
+            }
+
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             OpenFileDialog ofd = new OpenFileDialog() { Multiselect = true };
             while(ofd.ShowDialog() == DialogResult.OK)
             {
-                StartProcess(string.Format("r {0}", string.Concat(ofd.FileNames.Select(fi => fi + " "))));
+                StartProcess(string.Format("{0} {1}", se, string.Concat(ofd.FileNames.Select(fi => fi + " "))));
             }
             Console.WriteLine("\n------------------------------------\nProcess Complete");
             Console.ReadLine();

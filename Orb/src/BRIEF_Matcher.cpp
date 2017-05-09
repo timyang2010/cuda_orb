@@ -31,8 +31,8 @@ namespace BRIEF
 	}
 	void MultiLSHashTable::InsertRange(std::vector<BRIEF::Feature>& features)
 	{
-#pragma omp parallel for
-		for (int i = 0; i < 8; ++i)
+		#pragma omp parallel for
+		for (int i = 0; i < BRIEF_DEFAULT_WORDLENGTH; ++i)
 		{
 			hs[i].InsertRange(features);
 		}
@@ -41,9 +41,9 @@ namespace BRIEF
 #include <algorithm>
 	std::pair<int, BRIEF::Feature> MultiLSHashTable::Hash_Find(BRIEF::Feature& f, const int max_distance)
 	{
-		std::vector<std::pair<int, BRIEF::Feature>> distances(8);
+		std::vector<std::pair<int, BRIEF::Feature>> distances(BRIEF_DEFAULT_WORDLENGTH);
 #pragma omp parallel for
-		for (int i = 0; i < 8; ++i)
+		for (int i = 0; i < BRIEF_DEFAULT_WORDLENGTH; ++i)
 		{
 			std::vector<BRIEF::Feature> ff = hs[i][f];
 			int min = INT_MAX;

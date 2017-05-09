@@ -6,8 +6,9 @@
 #include <immintrin.h>
 namespace BRIEF
 {
-
+#define BRIEF_DEFAULT_WORDLENGTH 8
 #define BRIEF_DEFAULT_WINDOW_SIZE 31
+#define BRIEF_DEFAULT_SUBWINDOW_SIZE 5
 #define BRIEF_DEFAULT_TEST_COUNT 256
 #define sBRIEF_DEFAULT_LUT_SIZE 30
 	class BRIEF
@@ -50,7 +51,6 @@ namespace BRIEF
 		};
 
 	protected:
-		int size;
 		std::vector<BRIEF::BinaryTest> GenerateBinaryTests(const int count, const int dim);
 	private:
 		std::vector<BRIEF::BinaryTest> _tests;
@@ -144,15 +144,15 @@ namespace BRIEF
 			double _mean = -1;
 			double _stddev = -1;
 		};
-		void generateTests(int windowSize = BRIEF_DEFAULT_WINDOW_SIZE, int subWindowSize = 5);
+		void generateTests(int windowSize = BRIEF_DEFAULT_WINDOW_SIZE, int subWindowSize = BRIEF_DEFAULT_SUBWINDOW_SIZE, int min_distance = 4);
 		std::vector<candidate> candidates;
 	protected:
 		//encapsulate metadata for a single binary test and its test results
 		
 		bool checkCorrelation(candidate& c1, std::vector<candidate>& c2,double thres);
+		//compute absolute correlation between to binary tests	
 		double correlation(candidate& c1, candidate& c2);
-		//sort candidates by their distance to mean
-		//compute absolute correlation between to binary tests			
+		
 	private:
 		
 	};
