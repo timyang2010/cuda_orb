@@ -1,6 +1,6 @@
 
 #define TILE_RADIUS FAST_TILE/2
-#include "FAST.cuh"
+#include "FAST.h"
 #include "device_launch_parameters.h"
 __global__ void FAST(unsigned char* __restrict__ inputImage, unsigned char* __restrict__ cornerMap, const int threshold,const int arc_length, const int width, const  int height)
 {
@@ -171,8 +171,7 @@ __global__ void ComputeOrientation(unsigned char* __restrict__ inputImage, float
 	int cy = y + sumy[tid] / sum[tid];
 	int cc = cx + cy*width;
 
-	ang[tid] = atan2(sumy[tid] , sumx[tid]);
-	
+	ang[tid] = atan2(sumy[tid] , sumx[tid]);	
 	if (inputImage[c] < inputImage[cc])ang[tid] += M_PI;
 	ang[tid] = ang[tid] / M_PI * 180;
 	cornerMap[idx].z = int((ang[tid] + 360) / 12) % 30;

@@ -23,11 +23,11 @@ Point2f _rotate(Point2f p, double deg, Point2f center)
 
 void match_keypoints(string n1, string n2)
 {
-	Orb orb = Orb::fromFile("C:\\Users\\timya\\Desktop\\Orb\\x64\\Release\\pat.txt");
+	Orb orb = Orb::fromFile("pat.txt");
 	Mat m1 = imread(n1);
 	Mat m2 = imread(n2);
-	auto f1 = TrackKeypoints(m1, orb, Orb::MODE_RBRIEF, 1000);
-	auto f2 = TrackKeypoints(m2, orb, Orb::MODE_RBRIEF, 1000);
+	auto f1 = TrackKeypoints(m1, orb, 1000);
+	auto f2 = TrackKeypoints(m2, orb, 1000);
 	auto pairs = BRIEF::MatchBF(f1, f2, 45);
 	Mat fr(max(m1.rows,m2.rows), m1.cols + m2.cols, m1.type());
 	m1.copyTo(fr(Rect2d(0, 0, m1.cols, m1.rows)));
@@ -60,8 +60,8 @@ vector<float> rotate_test(string n1,Orb& orb,int max_distance,Orb::MODE mode)
 		Point2f center = Point2f(m1.cols / 2, m1.rows / 2);
 		Mat rm = getRotationMatrix2D(center, i, 1);
 		warpAffine(m1, rm2, rm, Size2d(m1.cols, m1.rows));
-		auto f1 = TrackKeypoints(m1, orb, mode,100000);
-		auto f2 = TrackKeypoints(rm2, orb, mode,100000);
+		auto f1 = TrackKeypoints(m1, orb, 100000);
+		auto f2 = TrackKeypoints(rm2, orb, 100000);
 		auto pairs = BRIEF::MatchBF(f1, f2, max_distance);
 		cout << f1.size() + f2.size() << endl;
 		Mat fr(m1.rows, m1.cols + m1.cols, m1.type());
@@ -105,7 +105,7 @@ vector<float> vector_reduce_mean(vector<vector<float>>& v)
 void experiment(int argc, char** argv)
 {
 	
-	Orb orb1 = Orb::fromFile("C:\\Users\\timya\\Desktop\\Orb\\x64\\Release\\pat.txt");
+	Orb orb1 = Orb::fromFile("pat.txt");
 	Orb orb2 = Orb();
 	Mat gr(512, 512, CV_8UC1);
 	Mat gr2(512, 512, CV_8UC1);
@@ -122,7 +122,7 @@ void experiment(int argc, char** argv)
 
 	vector<vector<float>> crvector(120);
 
-	for (int md = 35; md < 36; md += 14)
+	for (int md = 35; md <= 50; md += 15)
 	{
 		vector<vector<float>> r1;
 		vector<vector<float>> r2;
@@ -160,8 +160,6 @@ void experiment(int argc, char** argv)
 
 int main(int argc,char** argv)
 {
-
-	
 	switch (argv[1][0])
 	{
 	case 't':
@@ -177,9 +175,5 @@ int main(int argc,char** argv)
 		match_keypoints(string(argv[2]), string(argv[3]));
 		break;
 	}
-	return 0;
-
-
-	
 	return 0;
 }

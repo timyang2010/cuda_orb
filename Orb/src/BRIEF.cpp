@@ -39,7 +39,7 @@ namespace BRIEF
 		return tests;
 	}
 
-	std::vector<BRIEF::Feature> BRIEF::extractFeatures(uint8_t** image, vector<Point2d>& positions)  const
+	std::vector<BRIEF::Feature> BRIEF::extractFeatures(uint8_t** image, vector<Point2f>& positions)  const
 	{
 		std::vector<BRIEF::Feature> features(positions.size());
 		#pragma omp parallel for
@@ -47,7 +47,7 @@ namespace BRIEF
 		{
 			Feature f;
 			int bitpos = 0;
-			vector<Point2d>::iterator it = positions.begin()+p;
+			vector<Point2f>::iterator it = positions.begin()+p;
 			for (vector<BinaryTest>::const_iterator i = _tests.begin(); i != _tests.end(); ++i)
 			{
 				int x1 = it->x + i->x1; int y1 = it->y + i->y1;

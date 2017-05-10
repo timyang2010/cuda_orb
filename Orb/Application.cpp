@@ -65,13 +65,13 @@ Mat renderTrajectory(Mat& iframe)
 	return rframe;
 }
 
-vector<Orb::Feature> TrackKeypoints(Mat& frame, Orb& orb,Orb::MODE mode,int max_keypoints)
+vector<Orb::Feature> TrackKeypoints(Mat& frame, Orb& orb,int max_keypoints)
 {
 	Mat grey;
 	cvtColor(frame, grey, CV_BGR2GRAY);
 	uchar** grey2d = convert2D(grey.data, grey.cols, grey.rows);
 	vector<float4> corners = orb.detectKeypoints(grey, 25, 12, max_keypoints);
-	vector<Orb::Feature> features = orb.extractFeatures(grey2d, corners,mode);
+	vector<Orb::Feature> features = orb.extractFeatures(grey2d, corners);
 	return features;
 }
 void TrackCamera(string arg)
@@ -95,7 +95,7 @@ void TrackCamera(string arg)
 		Mat tframe(frame.rows, frame.cols, CV_8UC1);
 		Mat grey;
 		cvtColor(frame, grey, CV_BGR2GRAY);
-		vector<Orb::Feature> features = TrackKeypoints(frame, orb,Orb::MODE_RBRIEF);
+		vector<Orb::Feature> features = TrackKeypoints(frame, orb);
 		if (features_old.size() > 0)
 		{
 			BRIEF::MultiLSHashTable hs;

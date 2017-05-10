@@ -21,7 +21,7 @@
       <Filter>utility</Filter>
     </ClInclude>
     <ClInclude Include="Application.h" />
-    <ClInclude Include="include\FAST.cuh">
+    <ClInclude Include="include\FAST.h">
       <Filter>Fast</Filter>
     </ClInclude>
   </ItemGroup>

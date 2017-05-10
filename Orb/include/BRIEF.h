@@ -11,6 +11,13 @@ namespace BRIEF
 #define BRIEF_DEFAULT_SUBWINDOW_SIZE 5
 #define BRIEF_DEFAULT_TEST_COUNT 256
 #define sBRIEF_DEFAULT_LUT_SIZE 30
+
+	struct Keypoint
+	{
+		float x, y, z, w;
+	};
+
+
 	class BRIEF
 	{
 
@@ -21,7 +28,7 @@ namespace BRIEF
 		BRIEF();
 		BRIEF(int S);
 		BRIEF(std::vector<BinaryTest>& ts);
-		virtual std::vector<Feature> extractFeatures(uint8_t** image, std::vector<cv::Point2d>& positions) const;
+		virtual std::vector<Feature> extractFeatures(uint8_t** image, std::vector<cv::Point2f>& positions) const;
 		unsigned int DistanceBetween(Feature& f1, Feature& f2) const;
 
 		class Feature
@@ -73,8 +80,7 @@ namespace BRIEF
 		~rBRIEF();
 		//indexer to obtain underlying BRIEF test pattern
 		std::vector<BRIEF::BinaryTest> operator [](int i) const;
-		virtual std::vector<Feature> extractFeatures(uint8_t** image, std::vector<cv::Point2d>& positions) const;
-		virtual std::vector<Feature> extractFeatures(uint8_t** image, std::vector<cv::Point2d>& positions, std::vector<float>& angles) const;
+		virtual std::vector<Feature> extractFeatures(uint8_t** image, std::vector<cv::Point2f>& positions, std::vector<float>& angles) const;
 	};
 
 

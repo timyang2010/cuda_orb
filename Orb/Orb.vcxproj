@@ -183,7 +183,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BRIEF.h" />
-    <ClInclude Include="include\FAST.cuh" />
+    <ClInclude Include="include\FAST.h" />
     <ClInclude Include="include\Memory.h" />
     <ClInclude Include="include\Orb.h" />
     <ClInclude Include="include\Profiler.h" />

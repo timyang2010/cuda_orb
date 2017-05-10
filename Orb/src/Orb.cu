@@ -1,13 +1,22 @@
 #include "Orb.h"
-#include "FAST.cuh"
+#include "FAST.h"
 #include "Profiler.h"
 #include <thread>
 
 using namespace cv;
 Orb::Orb() : rBRIEF()
 {
-
+	_mode = MODE_RBRIEF;
 }
+Orb::Orb(int s, MODE mode) : rBRIEF(s)
+{
+	_mode = mode;
+}
+Orb::Orb(std::vector<BRIEF::BinaryTest> tests, MODE mode) : rBRIEF(tests)
+{
+	_mode = mode;
+}
+
 void Orb::computeOrientation(cuArray<unsigned char>& frame, std::vector<float4>& corners, int width, int height)
 {
 	int cc = corners.size() < CORNER_LIMIT ? corners.size() : CORNER_LIMIT;
@@ -43,8 +52,7 @@ std::vector<float4> Orb::detectKeypoints(cuArray<uchar>& ibuffer, cuArray<uchar>
 			return c1.w > c2.w;
 		});
 		int minc = corners.size() >= limit ? limit : corners.size();
-		std::vector<float4> strong = std::vector<float4>(corners.begin(), corners.begin() + minc);
-		corners = strong;
+		corners = std::vector<float4>(corners.begin(), corners.begin() + minc);
 	}
 	computeOrientation(ibuffer, corners, width, height);
 	return corners;
@@ -62,16 +70,16 @@ std::vector<float4> Orb::detectKeypoints(cv::Mat& grey, int thres, const int arc
 	return corners;
 }
 
-std::vector<BRIEF::BRIEF::Feature> Orb::extractFeatures(uint8_t** image, std::vector<float4> keypoints,MODE mode) const
+std::vector<BRIEF::BRIEF::Feature> Orb::extractFeatures(uint8_t** image, std::vector<float4> keypoints) const
 {
-	std::vector<cv::Point2d> corners;
+	std::vector<cv::Point2f> corners;
 	std::vector<float> angles;
 	for (int i = 0; i < keypoints.size(); ++i)
 	{
-		corners.push_back(cv::Point2d(keypoints[i].x, keypoints[i].y));
+		corners.push_back(cv::Point2f(keypoints[i].x, keypoints[i].y));
 		angles.push_back(keypoints[i].z);
 	}
-	if(mode == MODE::MODE_RBRIEF)
+	if(_mode == MODE::MODE_RBRIEF)
 		return rBRIEF::extractFeatures(image, corners, angles);
 	else
 		return BRIEF::extractFeatures(image, corners);

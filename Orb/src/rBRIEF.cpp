@@ -53,31 +53,8 @@ namespace BRIEF
 	{
 		return std::vector<BRIEF::BinaryTest>(lut[i]);
 	}
-	std::vector<BRIEF::Feature> rBRIEF::extractFeatures(uint8_t** image, std::vector<cv::Point2d>& positions) const
-	{
-		std::vector<BRIEF::Feature> features = std::vector<BRIEF::Feature>(positions.size());
-		int length = positions.size();
-		#pragma omp parallel for
-		for (int i = 0; i < length; ++i)
-		{
-			vector<BRIEF::BinaryTest> tests = lut[0];
-			vector<Point2d>::iterator p = positions.begin() + i;
-			Feature f; int bitpos = 0;
-			for (int k = 0; k < BRIEF_DEFAULT_TEST_COUNT; ++k)
-			{
-				vector<BinaryTest>::const_iterator t = tests.begin() + k;
-				int x1 = p->x + t->x1; int y1 = p->y + t->y1;
-				int x2 = p->x + t->x2; int y2 = p->y + t->y2;
-				f.setbit(bitpos, image[y1][x1] > image[y2][x2]);
-				++bitpos;
-			}
-			f.position = (*p);
-			features[i] = f;
-		}
-		return features;
-	}
 
-	std::vector<BRIEF::Feature> rBRIEF::extractFeatures(uint8_t** image, std::vector<cv::Point2d>& positions, vector<float>& angles) const
+	std::vector<BRIEF::Feature> rBRIEF::extractFeatures(uint8_t** image, std::vector<cv::Point2f>& positions, vector<float>& angles) const
 	{
 		std::vector<BRIEF::Feature> features = std::vector<BRIEF::Feature>(positions.size());
 		int length = positions.size();
@@ -86,7 +63,7 @@ namespace BRIEF
 		{
 			int ang = angles[i];
 			vector<BRIEF::BinaryTest> tests = lut[ang];
-			vector<Point2d>::iterator p = positions.begin() + i;
+			vector<Point2f>::iterator p = positions.begin() + i;
 			Feature f; int bitpos = 0;
 			for (int k = 0; k < BRIEF_DEFAULT_TEST_COUNT; ++k)
 			{
