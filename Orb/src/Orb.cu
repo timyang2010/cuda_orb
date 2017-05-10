@@ -70,20 +70,15 @@ std::vector<ty::Keypoint> Orb::detectKeypoints(cv::Mat& grey, int thres, const i
 	return corners;
 }
 
-std::vector<ty::BRIEF::Feature> Orb::extractFeatures(uint8_t** image, std::vector<ty::Keypoint> keypoints) const
+std::vector<ty::BRIEF::Feature> Orb::extractFeatures(cv::Mat& image, std::vector<ty::Keypoint> keypoints) const
 {
-	std::vector<cv::Point2f> corners;
-	std::vector<float> angles;
-	for (int i = 0; i < keypoints.size(); ++i)
-	{
-		corners.push_back(cv::Point2f(keypoints[i].x, keypoints[i].y));
-		angles.push_back(keypoints[i].z);
-	}
+	uchar** im = convert2D(image.data, image.cols, image.rows);
 	if(_mode == MODE::MODE_RBRIEF)
-		return rBRIEF::extractFeatures(image, corners, angles);
+		return rBRIEF::extractFeatures(im, keypoints);
 	else
-		return BRIEF::extractFeatures(image, corners);
+		return BRIEF::extractFeatures(im, keypoints);
 
+	delete[] im;
 }
 
 

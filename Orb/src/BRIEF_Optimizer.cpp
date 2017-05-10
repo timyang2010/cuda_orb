@@ -10,23 +10,7 @@ namespace ty
 	{
 
 	}
-	void Optimizer::extractFeatures(uint8_t** image, std::vector<cv::Point2f>& positions)
-	{
-		
-		#pragma omp parallel for
-		for (int i = 0; i < candidates.size(); ++i)
-		{
-			candidate c = candidates[i];	
-			for (std::vector<cv::Point2f>::iterator p = positions.begin(); p < positions.end(); ++p)
-			{
-				int x1 = p->x + c.tests[0].x1; int y1 = p->y + c.tests[0].y1;
-				int x2 = p->x + c.tests[0].x2; int y2 = p->y + c.tests[0].y2;
-				candidates[i].testResult.push_back(image[y1][x1] > image[y2][x2] ? 1 : 0);
-			}
-		}
-
-	}
-	void Optimizer::extractFeatures(uint8_t** image, std::vector<cv::Point2f>& positions, std::vector<float>& angles)
+	void Optimizer::extractFeatures(uint8_t** image, std::vector<Keypoint>& positions)
 	{	
 	#pragma omp parallel for
 		for (int i = 0; i < candidates.size(); ++i)
@@ -34,8 +18,9 @@ namespace ty
 			candidate c = candidates[i];
 			for (int j = 0; j < positions.size(); ++j)
 			{
-				int x1 = positions[j].x + c.tests[angles[j]].x1; int y1 = positions[j].y + c.tests[angles[j]].y1;
-				int x2 = positions[j].x + c.tests[angles[j]].x2; int y2 = positions[j].y + c.tests[angles[j]].y2;
+				int ang = positions[j].z;
+				int x1 = positions[j].x + c.tests[ang].x1; int y1 = positions[j].y + c.tests[ang].y1;
+				int x2 = positions[j].x + c.tests[ang].x2; int y2 = positions[j].y + c.tests[ang].y2;
 				candidates[i].testResult.push_back(image[y1][x1] > image[y2][x2] ? 1 : 0);
 			}
 		}
@@ -92,26 +77,7 @@ namespace ty
 		}
 		return tests;
 	}
-	double Optimizer::computeVariance(std::vector<BRIEF::Feature>& features)
-	{
-		double mean = 0,var = 0;
-		for (vector<BRIEF::Feature>::iterator f = features.begin(); f < features.end(); ++f)
-		{
-			for(int i=0;i<BRIEF_DEFAULT_WORDLENGTH;++i)
-				mean += __popcnt(f->value[i]);
-		}
-		mean /= features.size();
-		for (vector<BRIEF::Feature>::iterator f = features.begin(); f < features.end(); ++f)
-		{
-			int sum = 0;
-			for (int i = 0; i<BRIEF_DEFAULT_WORDLENGTH; ++i)
-				sum += __popcnt(f->value[i]);
-			var += pow(sum - mean,2);
-		}
-
-		return var / features.size();
-	}
-	void Optimizer::generateTests(int windowSize, int subWindowSize,int min_distance,int distance_scale)
+	void Optimizer::generateTests(int windowSize, int subWindowSize,int min_distance,int scale)
 	{
 		int padding = subWindowSize - 1;
 		int bound = windowSize - padding;
@@ -122,7 +88,7 @@ namespace ty
 		{
 			for (int j = -radius; j < radius; ++j)
 			{
-				tps.push_back(cv::Point2i(i*distance_scale, j*distance_scale));
+				tps.push_back(cv::Point2i(i*scale, j*scale));
 			}
 		}
 		for (int i = 0; i < tps.size(); ++i)
@@ -132,7 +98,7 @@ namespace ty
 				tests.push_back({ int8_t(tps[i].x),int8_t(tps[i].y), int8_t(tps[j].x), int8_t(tps[j].y) });
 			}
 		}
-		int dist = distance_scale*min_distance;
+		int dist = scale*min_distance;
 		for (vector<BRIEF::BinaryTest>::iterator it = tests.begin(); it < tests.end(); ++it)
 		{
 			if (abs(it->x1 - it->x2) > dist || abs(it->y1 - it->y2) > dist)
@@ -140,7 +106,6 @@ namespace ty
 				candidates.push_back(candidate(*it));
 			}
 		}
-		std::cout <<"generated " << candidates.size() <<" tests"<< endl;
 	}
 	double Optimizer::correlation(candidate& c1, candidate& c2)
 	{

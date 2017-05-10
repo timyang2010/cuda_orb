@@ -54,16 +54,15 @@ namespace ty
 		return std::vector<BRIEF::BinaryTest>(lut[i]);
 	}
 
-	std::vector<BRIEF::Feature> rBRIEF::extractFeatures(uint8_t** image, std::vector<cv::Point2f>& positions, vector<float>& angles) const
+	std::vector<BRIEF::Feature> rBRIEF::extractFeatures(uint8_t** image, std::vector<Keypoint>& positions) const
 	{
 		std::vector<BRIEF::Feature> features = std::vector<BRIEF::Feature>(positions.size());
 		int length = positions.size();
 		#pragma omp parallel for
 		for (int i = 0; i < length; ++i)
 		{
-			int ang = angles[i];
-			vector<BRIEF::BinaryTest> tests = lut[ang];
-			vector<Point2f>::iterator p = positions.begin() + i;
+			vector<BRIEF::BinaryTest> tests = lut[positions[i].z];
+			vector<Keypoint>::iterator p = positions.begin() + i;
 			Feature f; int bitpos = 0;
 			for (int k = 0; k < BRIEF_DEFAULT_TEST_COUNT; ++k)
 			{
@@ -73,7 +72,7 @@ namespace ty
 				f.setbit(bitpos, image[y1][x1] > image[y2][x2]);
 				++bitpos;
 			}
-			f.position = (*p);
+			f.position = p->position();
 			features[i] = f;
 		}
 		return features;

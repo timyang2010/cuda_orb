@@ -8,11 +8,11 @@ namespace ty
 	{
 		bitmask = 0;
 	}
-	LSHashSet::LSHashSet(uint8_t _bitmask)
+	LSHashSet::LSHashSet(unsigned char _bitmask)
 	{
 		bitmask = _bitmask;
 	}
-	uint8_t LSHashSet::hash(BRIEF::Feature& feature)
+	unsigned char LSHashSet::hash(BRIEF::Feature& feature)
 	{
 		return feature.value[bitmask];
 	}

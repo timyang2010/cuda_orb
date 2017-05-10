@@ -22,14 +22,7 @@ void BRIEF_Optimize(int argc, char** argv)
 		cvtColor(m, grey, CV_BGR2GRAY);
 		uchar** grey2d = convert2D(grey.data, grey.cols, grey.rows);
 		vector<ty::Keypoint> corners = orb.detectKeypoints(grey, 25, 12, 1500);
-		vector<Point2f> poi;
-		vector<float> angles;
-		for (auto c : corners)
-		{
-			poi.push_back(Point2f(c.x, c.y));
-			angles.push_back(c.z);
-		}
-		optimizer.extractFeatures(grey2d, poi, angles);
+		optimizer.extractFeatures(grey2d, corners);
 	}
 	auto bts = optimizer.Optimize();
 	Mat m = Mat::zeros(512, 512, CV_8UC1);
@@ -69,9 +62,8 @@ vector<Orb::Feature> TrackKeypoints(Mat& frame, Orb& orb,int max_keypoints)
 {
 	Mat grey;
 	cvtColor(frame, grey, CV_BGR2GRAY);
-	uchar** grey2d = convert2D(grey.data, grey.cols, grey.rows);
 	vector<ty::Keypoint> corners = orb.detectKeypoints(grey, 25, 12, max_keypoints);
-	vector<Orb::Feature> features = orb.extractFeatures(grey2d, corners);
+	vector<Orb::Feature> features = orb.extractFeatures(grey, corners);
 	return features;
 }
 void TrackCamera(string arg)

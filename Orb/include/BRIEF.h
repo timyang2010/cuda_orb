@@ -15,8 +15,11 @@ namespace ty
 	struct Keypoint
 	{
 		float x, y, z, w;
+		cv::Point2f position()
+		{
+			return cv::Point2f(x, y);
+		}
 	};
-
 
 	class BRIEF
 	{
@@ -28,7 +31,7 @@ namespace ty
 		BRIEF();
 		BRIEF(int S);
 		BRIEF(std::vector<BinaryTest>& ts);
-		virtual std::vector<Feature> extractFeatures(uint8_t** image, std::vector<cv::Point2f>& positions) const;
+		virtual std::vector<Feature> extractFeatures(uint8_t** image, std::vector<Keypoint>& positions) const;
 		unsigned int DistanceBetween(Feature& f1, Feature& f2) const;
 
 		class Feature
@@ -36,7 +39,7 @@ namespace ty
 		public:
 			Feature();
 
-			cv::Point2d position;
+			cv::Point2f position;
 			int operator -(Feature&) const;
 			friend std::ostream& operator<<(std::ostream& os, const Feature& dt);
 			inline void setbit(int pos, bool v);
@@ -49,10 +52,10 @@ namespace ty
 
 		struct BinaryTest
 		{
-			int8_t x1;
-			int8_t y1;
-			int8_t x2;
-			int8_t y2;
+			signed char x1;
+			signed char y1;
+			signed char x2;
+			signed char y2;
 			BinaryTest Rotate(double _cos, double _sin)  const;
 			friend std::ostream& operator<<(std::ostream& os, const BinaryTest& dt);
 		};
@@ -80,7 +83,7 @@ namespace ty
 		~rBRIEF();
 		//indexer to obtain underlying BRIEF test pattern
 		std::vector<BRIEF::BinaryTest> operator [](int i) const;
-		virtual std::vector<Feature> extractFeatures(uint8_t** image, std::vector<cv::Point2f>& positions, std::vector<float>& angles) const;
+		virtual std::vector<Feature> extractFeatures(uint8_t** image, std::vector<Keypoint>& positions) const;
 	};
 
 
@@ -92,13 +95,13 @@ namespace ty
 	{
 	public:
 		LSHashSet();
-		LSHashSet(uint8_t bitmask);
+		LSHashSet(unsigned char bitmask);
 		std::vector<BRIEF::Feature>& operator[](BRIEF::Feature& f);
 		void InsertRange(std::vector<BRIEF::Feature>& features);
 
 	protected:
-		uint8_t hash(BRIEF::Feature& feature);
-		uint8_t bitmask;
+		unsigned char hash(BRIEF::Feature& feature);
+		unsigned char bitmask;
 		std::vector<BRIEF::Feature> table[256];
 	};
 
@@ -108,7 +111,7 @@ namespace ty
 	public:
 		MultiLSHashTable()
 		{
-			for (int i = 0; i < 8; ++i)
+			for (int i = 0; i < BRIEF_DEFAULT_WORDLENGTH; ++i)
 			{
 				hs.push_back(LSHashSet(i));
 			}
@@ -128,14 +131,22 @@ namespace ty
 	public:
 		class candidate;
 		Optimizer();
-		void extractFeatures(uint8_t** image, std::vector<cv::Point2f>& positions);
-		void extractFeatures(uint8_t** image, std::vector<cv::Point2f>& positions, std::vector<float>& angles);
+		void extractFeatures(uint8_t** image, std::vector<Keypoint>& positions);
 
 		//returns a set of optimized BRIEF tests based on input keypoints
 		std::vector<BRIEF::BinaryTest> Optimize(int length = BRIEF_DEFAULT_TEST_COUNT);
 
 		//utility function, compute variance of given BRIEF::Feature set
-		double computeVariance(std::vector<BRIEF::Feature>& features);
+		void generateTests(
+			int windowSize = BRIEF_DEFAULT_WINDOW_SIZE, 
+			int subWindowSize = BRIEF_DEFAULT_SUBWINDOW_SIZE, 
+			int min_distance = 4,
+			int scale = 1
+		);
+
+		std::vector<candidate> candidates;
+	protected:
+		//encapsulate metadata for a single binary test and its test results	
 		class candidate
 		{
 		public:
@@ -150,16 +161,7 @@ namespace ty
 			double _mean = -1;
 			double _stddev = -1;
 		};
-		void generateTests(
-			int windowSize = BRIEF_DEFAULT_WINDOW_SIZE, 
-			int subWindowSize = BRIEF_DEFAULT_SUBWINDOW_SIZE, 
-			int min_distance = 4,
-			int distance_scale = 1
-		);
-		std::vector<candidate> candidates;
-	protected:
-		//encapsulate metadata for a single binary test and its test results
-		
+			
 		bool checkCorrelation(candidate& c1, std::vector<candidate>& c2,double thres);
 		//compute absolute correlation between to binary tests	
 		double correlation(candidate& c1, candidate& c2);

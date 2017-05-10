@@ -34,11 +34,11 @@ void match_keypoints(string n1, string n2)
 	m2.copyTo(fr(Rect2d(m1.cols, 0, m2.cols, m2.rows)));
 	for (auto f : f1)
 	{
-		circle(fr, f.position, 1, Scalar(0, 0, 128), 1, LINE_AA);
+		circle(fr, f.position, 1, Scalar(12, 255, 128), 1, LINE_AA);
 	}
 	for (auto f : f2)
 	{
-		circle(fr, f.position + Point2d(m1.cols, 0), 1, Scalar(12, 255, 128), 1, LINE_AA);
+		circle(fr, f.position + Point2f(m1.cols, 0), 1, Scalar(12, 255, 128), 1, LINE_AA);
 	}
 	int inlier = 0;
 	for (auto p : pairs)
@@ -49,7 +49,7 @@ void match_keypoints(string n1, string n2)
 	waitKey();
 }
 
-vector<float> rotate_test(string n1,Orb& orb,int max_distance,Orb::MODE mode)
+vector<float> rotate_test(string n1,Orb& orb,int max_distance)
 {
 	
 	Mat m1 = imread(n1);
@@ -129,9 +129,9 @@ void experiment(int argc, char** argv)
 		vector<vector<float>> r3;
 		for (int i = 2; i < argc; ++i)
 		{
-			r1.push_back(rotate_test(argv[i], orb2, md, Orb::MODE_BRIEF));
-			r2.push_back(rotate_test(argv[i], orb2, md, Orb::MODE_RBRIEF));
-			r3.push_back(rotate_test(argv[i], orb1, md, Orb::MODE_RBRIEF));
+			r1.push_back(rotate_test(argv[i], orb2, md));
+			r2.push_back(rotate_test(argv[i], orb2, md));
+			r3.push_back(rotate_test(argv[i], orb1, md));
 		}
 		vector<float> v1 = vector_reduce_mean(r1);
 		vector<float> v2 = vector_reduce_mean(r2);
