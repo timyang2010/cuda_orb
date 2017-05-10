@@ -28,7 +28,7 @@ void match_keypoints(string n1, string n2)
 	Mat m2 = imread(n2);
 	auto f1 = TrackKeypoints(m1, orb, 1000);
 	auto f2 = TrackKeypoints(m2, orb, 1000);
-	auto pairs = BRIEF::MatchBF(f1, f2, 45);
+	auto pairs = ty::MatchBF(f1, f2, 45);
 	Mat fr(max(m1.rows,m2.rows), m1.cols + m2.cols, m1.type());
 	m1.copyTo(fr(Rect2d(0, 0, m1.cols, m1.rows)));
 	m2.copyTo(fr(Rect2d(m1.cols, 0, m2.cols, m2.rows)));
@@ -62,7 +62,7 @@ vector<float> rotate_test(string n1,Orb& orb,int max_distance,Orb::MODE mode)
 		warpAffine(m1, rm2, rm, Size2d(m1.cols, m1.rows));
 		auto f1 = TrackKeypoints(m1, orb, 100000);
 		auto f2 = TrackKeypoints(rm2, orb, 100000);
-		auto pairs = BRIEF::MatchBF(f1, f2, max_distance);
+		auto pairs = ty::MatchBF(f1, f2, max_distance);
 		cout << f1.size() + f2.size() << endl;
 		Mat fr(m1.rows, m1.cols + m1.cols, m1.type());
 		m1.copyTo(fr(Rect2d(0, 0, m1.cols, m1.rows)));

@@ -10,7 +10,7 @@
 using namespace std;
 using namespace cv;
 
-namespace BRIEF
+namespace ty
 {
 	rBRIEF::rBRIEF() : rBRIEF(BRIEF_DEFAULT_WINDOW_SIZE)
 	{

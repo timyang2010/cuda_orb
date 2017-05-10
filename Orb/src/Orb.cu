@@ -17,7 +17,7 @@ Orb::Orb(std::vector<BRIEF::BinaryTest> tests, MODE mode) : rBRIEF(tests)
 	_mode = mode;
 }
 
-void Orb::computeOrientation(cuArray<unsigned char>& frame, std::vector<float4>& corners, int width, int height)
+void Orb::computeOrientation(cuArray<unsigned char>& frame, std::vector<ty::Keypoint>& corners, int width, int height)
 {
 	int cc = corners.size() < CORNER_LIMIT ? corners.size() : CORNER_LIMIT;
 	AngleMap.upload(corners.data(), cc);
@@ -25,9 +25,9 @@ void Orb::computeOrientation(cuArray<unsigned char>& frame, std::vector<float4>&
 	AngleMap.download(corners.data(), cc);
 }
 
-std::vector<float4> Orb::detectKeypoints(cuArray<uchar>& ibuffer, cuArray<uchar>& aux, int thres, const int arc_length, const int width, const int height,const int limit, const int padding)
+std::vector<ty::Keypoint> Orb::detectKeypoints(cuArray<uchar>& ibuffer, cuArray<uchar>& aux, int thres, const int arc_length, const int width, const int height,const int limit, const int padding)
 {
-	std::vector<float4> corners;
+	std::vector<ty::Keypoint> corners;
 	cv::Mat auxmat = cv::Mat(width, height, CV_8UC1);
 	FAST << < dim3(width / FAST_TILE, height / FAST_TILE), dim3(FAST_TILE, FAST_TILE) >> > (ibuffer, aux, thres, arc_length, width, height);
 	aux.download(auxmat.data);
@@ -48,29 +48,29 @@ std::vector<float4> Orb::detectKeypoints(cuArray<uchar>& ibuffer, cuArray<uchar>
 		AngleMap.upload(corners.data(), corners.size());
 		FAST_Refine << < corners.size() / 32, 32 >> >(ibuffer, AngleMap, corners.size(), width, height);
 		AngleMap.download(corners.data(), corners.size());
-		std::sort(corners.begin(), corners.end(), [](float4& c1, float4& c2) {
+		std::sort(corners.begin(), corners.end(), [](ty::Keypoint& c1, ty::Keypoint& c2) {
 			return c1.w > c2.w;
 		});
 		int minc = corners.size() >= limit ? limit : corners.size();
-		corners = std::vector<float4>(corners.begin(), corners.begin() + minc);
+		corners = std::vector<ty::Keypoint>(corners.begin(), corners.begin() + minc);
 	}
 	computeOrientation(ibuffer, corners, width, height);
 	return corners;
 }
 
 
-std::vector<float4> Orb::detectKeypoints(cv::Mat& grey, int thres, const int arc_length,const int limit, const int padding)
+std::vector<ty::Keypoint> Orb::detectKeypoints(cv::Mat& grey, int thres, const int arc_length,const int limit, const int padding)
 {
 	int frameWidth = grey.cols, frameHeight = grey.rows;
 	cuArray<uchar> gpuInputBuffer(frameWidth*frameHeight), gpuOutputBuffer(frameWidth*frameHeight);
 	gpuInputBuffer.upload(grey.data);
 	std::thread first([&] { boxFilter(grey, grey, -1, Size(5, 5)); });
-	std::vector<float4> corners = detectKeypoints(gpuInputBuffer, gpuOutputBuffer, thres, arc_length, frameWidth, frameHeight,limit);
+	std::vector<ty::Keypoint> corners = detectKeypoints(gpuInputBuffer, gpuOutputBuffer, thres, arc_length, frameWidth, frameHeight,limit);
 	first.join();
 	return corners;
 }
 
-std::vector<BRIEF::BRIEF::Feature> Orb::extractFeatures(uint8_t** image, std::vector<float4> keypoints) const
+std::vector<ty::BRIEF::Feature> Orb::extractFeatures(uint8_t** image, std::vector<ty::Keypoint> keypoints) const
 {
 	std::vector<cv::Point2f> corners;
 	std::vector<float> angles;

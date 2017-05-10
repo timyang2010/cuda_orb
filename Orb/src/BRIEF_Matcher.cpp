@@ -1,7 +1,7 @@
 #include "BRIEF.h"
 using namespace std;
 using namespace cv;
-namespace BRIEF
+namespace ty
 {
 
 	LSHashSet::LSHashSet()
@@ -88,7 +88,7 @@ namespace BRIEF
 
 }
 
-namespace BRIEF
+namespace ty
 {
 
 	vector< pair<Point2f, Point2f> > MatchBF(std::vector<BRIEF::Feature>& f1, std::vector<BRIEF::Feature>& f2, const int threshold)

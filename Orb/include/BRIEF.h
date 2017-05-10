@@ -4,7 +4,7 @@
 #include <opencv2/core.hpp>
 #include <vector>
 #include <immintrin.h>
-namespace BRIEF
+namespace ty
 {
 #define BRIEF_DEFAULT_WORDLENGTH 8
 #define BRIEF_DEFAULT_WINDOW_SIZE 31

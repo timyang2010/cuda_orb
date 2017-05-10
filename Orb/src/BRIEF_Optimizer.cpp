@@ -3,7 +3,7 @@
 #include <iostream>
 #include "Profiler.h"
 using namespace std;
-namespace BRIEF
+namespace ty
 {
 
 	Optimizer::Optimizer()

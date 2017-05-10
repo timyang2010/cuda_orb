@@ -67,7 +67,7 @@ __device__ void localElMul(float in1[tile][tile], float in2[tile][tile], float o
 }
 
 
-__global__ void FAST_Refine(unsigned char* __restrict__ inputImage, float4* __restrict__ cornerMap,const int count, const int width, const  int height)
+__global__ void FAST_Refine(unsigned char* __restrict__ inputImage, ty::Keypoint* __restrict__ cornerMap,const int count, const int width, const  int height)
 {
 	const float k = 0.04;
 	//const float gk3[][3] = { {1,2,1},{2,4,2},{1,2,1} };
@@ -81,7 +81,7 @@ __global__ void FAST_Refine(unsigned char* __restrict__ inputImage, float4* __re
 	int threadIndex = threadIdx.x + blockDim.x*blockIdx.x;
 	if (threadIndex < count)
 	{
-		float4 cvector = cornerMap[threadIndex];
+		ty::Keypoint cvector = cornerMap[threadIndex];
 		if (cvector.x > 3 && cvector.x < width - 3 && cvector.y>3 && cvector.y < height - 3)
 		{
 			int ptr = cvector.x - (tile / 2) + (cvector.y - tile / 2)*width;
@@ -136,7 +136,7 @@ __global__ void FAST_Refine(unsigned char* __restrict__ inputImage, float4* __re
 
 #define _USE_MATH_DEFINES
 #include <math.h>
-__global__ void ComputeOrientation(unsigned char* __restrict__ inputImage, float4* __restrict__ cornerMap, const int count, const int width, const  int height)
+__global__ void ComputeOrientation(unsigned char* __restrict__ inputImage, ty::Keypoint* __restrict__ cornerMap, const int count, const int width, const  int height)
 {
 	int idx = threadIdx.x + blockDim.x*blockIdx.x;
 	__shared__ float ang[33];
@@ -148,7 +148,7 @@ __global__ void ComputeOrientation(unsigned char* __restrict__ inputImage, float
 	sumx[tid] = 1;
 	sumy[tid] = 1;
 	sum[tid] = 1;
-	float4 p = cornerMap[idx];
+	ty::Keypoint p = cornerMap[idx];
 	int x = p.x, y = p.y;
 	int c = x + y*width;
 	const int w = 19;

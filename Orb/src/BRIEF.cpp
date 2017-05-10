@@ -8,7 +8,7 @@
 using namespace std;
 using namespace cv;
 
-namespace BRIEF
+namespace ty
 {
 
 	BRIEF::BRIEF() : BRIEF(BRIEF_DEFAULT_WINDOW_SIZE)

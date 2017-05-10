@@ -11,7 +11,7 @@ using namespace std;
 void BRIEF_Optimize(int argc, char** argv)
 {
 	Orb orb;
-	BRIEF::Optimizer optimizer;
+	ty::Optimizer optimizer;
 	vector<Orb::Feature> features;
 	optimizer.generateTests(31,5,4);
 	for (int i=2;i<argc;++i)
@@ -21,7 +21,7 @@ void BRIEF_Optimize(int argc, char** argv)
 		Mat grey;
 		cvtColor(m, grey, CV_BGR2GRAY);
 		uchar** grey2d = convert2D(grey.data, grey.cols, grey.rows);
-		vector<float4> corners = orb.detectKeypoints(grey, 25, 12, 1500);
+		vector<ty::Keypoint> corners = orb.detectKeypoints(grey, 25, 12, 1500);
 		vector<Point2f> poi;
 		vector<float> angles;
 		for (auto c : corners)
@@ -70,7 +70,7 @@ vector<Orb::Feature> TrackKeypoints(Mat& frame, Orb& orb,int max_keypoints)
 	Mat grey;
 	cvtColor(frame, grey, CV_BGR2GRAY);
 	uchar** grey2d = convert2D(grey.data, grey.cols, grey.rows);
-	vector<float4> corners = orb.detectKeypoints(grey, 25, 12, max_keypoints);
+	vector<ty::Keypoint> corners = orb.detectKeypoints(grey, 25, 12, max_keypoints);
 	vector<Orb::Feature> features = orb.extractFeatures(grey2d, corners);
 	return features;
 }
@@ -80,7 +80,7 @@ void TrackCamera(string arg)
 	Profiler profiler;
 	VideoCapture cap;
 	Mat frame;
-	BRIEF::Optimizer opt;
+	ty::Optimizer opt;
 	namedWindow("traj", WINDOW_NORMAL);
 	resizeWindow("traj", 1280, 720);
 	moveWindow("traj", 50, 50);
@@ -98,7 +98,7 @@ void TrackCamera(string arg)
 		vector<Orb::Feature> features = TrackKeypoints(frame, orb);
 		if (features_old.size() > 0)
 		{
-			BRIEF::MultiLSHashTable hs;
+			ty::MultiLSHashTable hs;
 			hs.InsertRange(features);
 			for (auto mp : hs.Hash_Match(features_old, 64))
 			{
