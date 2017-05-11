@@ -2,7 +2,6 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
-using MahApps.Metro.Controls;
 namespace loader
 {
     internal enum AccentState
@@ -49,6 +48,8 @@ namespace loader
         public MainWindow()
         {
             InitializeComponent();
+
+            xxz.WriteOutput("Initialized", System.Windows.Media.Colors.Red);
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {

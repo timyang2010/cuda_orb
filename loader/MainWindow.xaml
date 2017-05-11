@@ -1,11 +1,11 @@
 ﻿<Window x:Class="loader.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:mah="clr-namespace:MahApps.Metro;assembly=MahApps.Metro"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:loader" Background="{x:Null}" 
-         xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:cc="clr-namespace:ConsoleControl.WPF;assembly=ConsoleControl.WPF"
         mc:Ignorable="d" AllowsTransparency="True" WindowStyle="None" Loaded="Window_Loaded"
         Title="MainWindow" Height="720" Width="1280">
     <Window.Resources>
@@ -176,7 +176,9 @@
                             </toolkit:Zoombox>
                         </TabItem>
                         <TabItem Header="Section 3">
-                            <TextBlock>XXX</TextBlock>
+                            <cc:ConsoleControl Margin="0,0,-2,-2" FontSize="18" BorderThickness="0" Name="xxz">
+                                
+                            </cc:ConsoleControl>
                         </TabItem>
                     </TabControl>
                 </Grid>
