@@ -23,7 +23,7 @@ public:
 	std::vector<ty::Keypoint> detectKeypoints(cv::Mat& frame, int thres, const int arc_length, const int limit = 1000, const int padding = (int)(BRIEF_DEFAULT_WINDOW_SIZE*0.8f));
 	//compute rBRIEF descriptors given a set of keypoints
 	std::vector<Feature> extractFeatures(cv::Mat& image, std::vector<ty::Keypoint> keypoints) const;
-	static Orb fromFile(char* filename);
+	static Orb fromFile(char* filename, MODE mode = MODE_RBRIEF);
 	enum MODE
 	{
 		MODE_BRIEF,

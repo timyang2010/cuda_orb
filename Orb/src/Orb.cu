@@ -72,17 +72,18 @@ std::vector<ty::Keypoint> Orb::detectKeypoints(cv::Mat& grey, int thres, const i
 
 std::vector<ty::BRIEF::Feature> Orb::extractFeatures(cv::Mat& image, std::vector<ty::Keypoint> keypoints) const
 {
+	std::vector<ty::BRIEF::Feature> f;
 	uchar** im = convert2D(image.data, image.cols, image.rows);
-	if(_mode == MODE::MODE_RBRIEF)
-		return rBRIEF::extractFeatures(im, keypoints);
+	if (_mode == MODE::MODE_RBRIEF)
+		f = rBRIEF::extractFeatures(im, keypoints);
 	else
-		return BRIEF::extractFeatures(im, keypoints);
-
+		f = BRIEF::extractFeatures(im, keypoints);
 	delete[] im;
+	return f;
 }
 
 
-Orb Orb::fromFile(char* filename)
+Orb Orb::fromFile(char* filename, MODE mode)
 {
 	std::cout << std::string(filename);
 	std::fstream f(filename,std::ios::in);
@@ -93,5 +94,5 @@ Orb Orb::fromFile(char* filename)
 		bp.push_back({ (int8_t)x1,(int8_t)y1,(int8_t)x2,(int8_t)y2 });
 		std::cout << x1 << " " << y1 << " " << x2 << " " << y2 << std::endl;
 	}
-	return Orb(bp);
+	return Orb(bp,mode);
 }

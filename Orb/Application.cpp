@@ -83,6 +83,7 @@ void TrackCamera(string arg)
 	vector<Orb::Feature> features_old;
 	for (int fc = 0; waitKey(1) == -1; ++fc)
 	{
+		if (fc % 2 == 0)continue;
 		if (!cap.read(frame))break;
 		Mat tframe(frame.rows, frame.cols, CV_8UC1);
 		Mat grey;
@@ -100,6 +101,6 @@ void TrackCamera(string arg)
 				
 		}
 		features_old = features;
-		imshow("traj", grey / 2 + renderTrajectory(tframe));
+		imshow("traj", renderTrajectory(tframe));
 	}
 }

@@ -43,7 +43,7 @@ void match_keypoints(string n1, string n2)
 	int inlier = 0;
 	for (auto p : pairs)
 	{
-		line(fr, p.first, p.second + Point2f(m1.cols, 0), Scalar(255, ((int)p.second.x) % 255, ((int)p.second.x) % 255), 1, LINE_AA);
+		line(fr, p.first, p.second + Point2f(m1.cols, 0), Scalar((1-(float)p.second.y / (float)m2.rows) * 255, ((float)p.second.y / (float)m2.rows) * 255, ((float)p.second.y / (float)m2.rows) * 255), 1, LINE_AA);
 	}
 	imshow("match", fr);
 	waitKey();
