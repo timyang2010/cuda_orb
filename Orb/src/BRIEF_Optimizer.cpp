@@ -39,7 +39,7 @@ namespace ty
 	}
 
 	//returns a set of optimized BRIEF tests based on input keypoints
-	std::vector<BRIEF::BinaryTest> Optimizer::Optimize(int length)
+	std::vector<BRIEF::BinaryTest> Optimizer::Optimize(float stp,float step)
 	{
 		#pragma omp parallel for
 		for (int i = 0; i < candidates.size(); ++i)
@@ -50,8 +50,6 @@ namespace ty
 			return c1.rank > c2.rank;
 		});
 		std::vector<candidate> v;
-		double thres = 0.3;
-		const double velocity = 0.03;
 		vector<BRIEF::BinaryTest> tests;
 		for (;v.size()<256;)
 		{	
@@ -60,15 +58,15 @@ namespace ty
 			int iters = 0;
 			for (vector<candidate>::iterator it = candidates.begin() + 1; it < candidates.end(); ++it,++iters)
 			{
-				if (checkCorrelation(*it, v, thres))
+				if (checkCorrelation(*it, v, stp))
 				{
 					v.push_back(*it);
 				}
 				if (v.size() > 255) break;
 				cout << '\r'<<iters<<" "<<v.size()<< "/256    ";
 			}
-			cout << endl<< "achieved: " << v.size() << "/256  " << "threshold:" << thres<< endl;
-			thres += velocity;
+			cout << endl<< "achieved: " << v.size() << "/256  " << "threshold:" << stp << endl;
+			stp += step;
 		}
 		cout << "training complete" << endl;
 		for (int i = 0; i < 256; ++i)

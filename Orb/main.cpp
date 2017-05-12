@@ -49,6 +49,42 @@ void match_keypoints(string n1, string n2)
 	waitKey();
 }
 
+void extract_patch(int argc, char** argv)
+{
+	const string path = "\\\\140.118.7.213\\Dataset\\pos1\\";
+	ty::Optimizer optimizer;
+	optimizer.generateTests(31, 5, 2, 1);
+	for (int i = 1; i < 1200; ++i)
+	{
+		stringstream ss;
+		ss << i << ".jpg";
+		string p = path + ss.str();
+		cout << i << endl;
+		Mat patch = imread(path+ss.str(), CV_LOAD_IMAGE_GRAYSCALE);
+		Mat normalized;
+		resize(patch, normalized, Size2f(31, 31));
+		ty::Keypoint k(16,16);
+		vector<ty::Keypoint> kps;
+		kps.push_back(k);
+		optimizer.extractFeatures(convert2D<uchar>(normalized.data, normalized.cols, normalized.rows),kps);
+	}
+	auto result = optimizer.Optimize(0.2,0.01);
+	Mat gr = Mat::zeros(512, 512, CV_8UC1);
+	for (int i = 0; i < 256; ++i)
+	{
+		line(gr, Point2d(result[i].x1 * 16 + 256, result[i].y1 * 16 + 256), Point2d(result[i].x2 * 16 + 256, result[i].y2 * 16 + 256), Scalar(225), 1, LINE_AA);
+	}
+	imshow("x", gr);
+	waitKey();
+	fstream of("directed.txt", ios::out);
+	for (auto t : result)
+	{
+		of << (int)t.x1 << " " << (int)t.y1 << " " << (int)t.x2 << " " << (int)t.y2 << endl;
+	}
+	of.close();
+}
+
+
 vector<float> rotate_test(string n1,Orb& orb,int max_distance)
 {
 	
@@ -88,7 +124,6 @@ vector<float>& vector_sum(vector<float>&v1, vector<float>&v2)
 	}
 	return v1;
 }
-
 vector<float> vector_reduce_mean(vector<vector<float>>& v)
 {
 	vector<float> tmp(v[0].size());
@@ -174,6 +209,8 @@ int main(int argc,char** argv)
 	case 'm':
 		match_keypoints(string(argv[2]), string(argv[3]));
 		break;
+	case 'd':
+		directed_train(argc, argv);
 	}
 	return 0;
 }

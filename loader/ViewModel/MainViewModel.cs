@@ -29,6 +29,8 @@ namespace loader.ViewModel
     {
 
         /// 
+        public List<string> Options { get; set; } = new List<string>();
+        public int SelectedIndex { get; set; }
 
         public ObservableCollection<ImageSource> Sources { get { return _Sources; } }
         private ObservableCollection<ImageSource> _Sources = new ObservableCollection<ImageSource>();
@@ -48,12 +50,17 @@ namespace loader.ViewModel
         /// </summary>
         public MainViewModel()
         {
+            Options.Add("t");
+            Options.Add("c");
+            Options.Add("d");
+            Options.Add("r");
             cc = new ConsoleControl()
             {
                 Margin = new Thickness(-2),
                 FontSize = 17
 
             };
+
             cc.WriteOutput("Initialized", Colors.Red);
             cc.ClearOutput();
         }
@@ -91,7 +98,8 @@ namespace loader.ViewModel
 
         public void run(string option, List<string> files)
         {
-            cc.StartProcess("Orb.exe", string.Format("{0} {1}", option, string.Concat(files.Select(fi => fi + " "))));
+            Program.run(option, files);
+            //cc.StartProcess("Orb.exe", string.Format("{0} {1}", option, string.Concat(files.Select(fi => fi + " "))));
         }
 
         private RelayCommand<string> _ExecuteCommand;
@@ -103,7 +111,13 @@ namespace loader.ViewModel
                 {
                     if (cc.IsProcessRunning) cc.StopProcess();
                     cc.ClearOutput();
-                    run("match", _Sources.Where(p => p.IsSelected).Select(p => p.Path).ToList());
+                    cc.WriteOutput(Options[SelectedIndex], Colors.Green);
+                    foreach(var x in _Sources.Where(p => p.IsSelected).Select(p => p.Path).ToList())
+                    {
+                        cc.WriteOutput(x, Colors.HotPink);
+                    }
+                    
+                    run(Options[SelectedIndex], _Sources.Where(p => p.IsSelected).Select(p => p.Path).ToList());
                 });
                 return _ExecuteCommand;
             }
@@ -129,8 +143,19 @@ namespace loader.ViewModel
             {
                 if (_SelectCommand == null) _SelectCommand = new RelayCommand<ImageSource>(s =>
                 {
-                    Selected = s.Path;
-                    s.IsSelected = !s.IsSelected;
+                    if(s!=null)
+                    {
+                        Selected = s.Path;
+                        s.IsSelected = !s.IsSelected;
+                    }
+                    else
+                    {
+                        foreach(var ss in Sources)
+                        {
+                            ss.IsSelected = true;
+                        }
+                    }
+                 
                 });
                 return _SelectCommand;
             }

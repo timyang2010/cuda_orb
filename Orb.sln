@@ -11,6 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestEnumerator", "Directory
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "loader", "loader\loader.csproj", "{2F26B80C-43B9-4579-902C-1F36324E97D9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FC79BEBD-DBA2-4A71-B943-68AAAA142441} = {FC79BEBD-DBA2-4A71-B943-68AAAA142441}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -14,6 +14,18 @@ namespace ty
 
 	struct Keypoint
 	{
+		Keypoint()
+		{
+			x = 0;
+			y = 0;
+			z = 0;
+			w = 0;
+		}
+		Keypoint(float _x,float _y)
+		{
+			x = _x;
+			y = _y;
+		}
 		float x, y, z, w;
 		cv::Point2f position()
 		{
@@ -134,7 +146,7 @@ namespace ty
 		void extractFeatures(uint8_t** image, std::vector<Keypoint>& positions);
 
 		//returns a set of optimized BRIEF tests based on input keypoints
-		std::vector<BRIEF::BinaryTest> Optimize(int length = BRIEF_DEFAULT_TEST_COUNT);
+		std::vector<BRIEF::BinaryTest> Optimize(float stp = 0.3f,float delta = 0.03f);
 
 		//utility function, compute variance of given BRIEF::Feature set
 		void generateTests(
