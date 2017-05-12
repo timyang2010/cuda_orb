@@ -19,10 +19,20 @@ namespace loader.ViewModel
                 RaisePropertyChanged("Path");
             }
         }
+        private bool _IsSelected;
+        public bool IsSelected
+        {
+            get { return _IsSelected; }
+            set
+            {
+                _IsSelected = value;
+                RaisePropertyChanged("IsSelected");
+            }
+        }
         public ImageSource(string p)
         {
             Path = p;
         }
-        
+
     }
 }

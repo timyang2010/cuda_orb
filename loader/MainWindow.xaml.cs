@@ -48,8 +48,6 @@ namespace loader
         public MainWindow()
         {
             InitializeComponent();
-
-            xxz.WriteOutput("Initialized", System.Windows.Media.Colors.Red);
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -87,11 +85,16 @@ namespace loader
         }
         private void Thumb_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
         {
-            this.Left += e.HorizontalChange;
-            this.Top += e.VerticalChange;
-            if(this.WindowState==WindowState.Maximized && e.VerticalChange>10)
+
+            if (this.WindowState == WindowState.Maximized && e.VerticalChange > 10)
             {
                 restore();
+                e.Handled = true;
+            }
+            else
+            {
+                this.Left += e.HorizontalChange;
+                this.Top += e.VerticalChange;
             }
         }
 
@@ -114,7 +117,7 @@ namespace loader
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
-            
+
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -131,15 +134,32 @@ namespace loader
                 _t = this.Top;
                 this.WindowState = WindowState.Maximized;
             }
-          
+
         }
 
-        double _w, _h,_l,_t;
+        double _w, _h, _l, _t;
+
+        private void Thumb_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (this.WindowState == WindowState.Maximized)
+            {
+                restore();
+            }
+            else
+            {
+                _w = this.Width;
+                _h = this.Height;
+                _l = this.Left;
+                _t = this.Top;
+                this.WindowState = WindowState.Maximized;
+            }
+            e.Handled = true;
+        }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-           
-            
+
+
             this.WindowState = WindowState.Minimized;
         }
 
@@ -154,7 +174,7 @@ namespace loader
             this.Left += e.HorizontalChange;
             this.Width -= e.HorizontalChange;
             this.Height += e.VerticalChange;
-           
+
         }
     }
 }
