@@ -155,7 +155,7 @@ namespace ty
 			int min_distance = 4,
 			int scale = 1
 		);
-
+		void save(std::string filename, std::vector<BRIEF::BinaryTest> tests);
 		std::vector<candidate> candidates;
 	protected:
 		//encapsulate metadata for a single binary test and its test results	
@@ -167,6 +167,7 @@ namespace ty
 			double stddev();
 			std::vector<BRIEF::BinaryTest> tests;
 			std::vector<unsigned short> testResult;
+
 			void computeRank();
 			double rank;
 		private:

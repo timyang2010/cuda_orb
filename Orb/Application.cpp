@@ -26,19 +26,13 @@ void BRIEF_Optimize(int argc, char** argv)
 	}
 	auto bts = optimizer.Optimize();
 	Mat m = Mat::zeros(512, 512, CV_8UC1);
-	fstream of("pat.txt",ios::out);
 	for (auto t : bts)
 	{
 		line(m, Point2f(t.x1 * 16 + 256, t.y1 * 16 + 256), Point2f(t.x2 * 16 + 256, t.y2 * 16 + 256), Scalar(255), 1, cv::LINE_AA);
-		cout << (int)t.x1 << " " << (int)t.y1 << "   " << (int)t.x2 << " " << (int)t.y2 << endl;
 	}
 	imshow("result", m);
 	waitKey();
-	for (auto t : bts)
-	{
-		of << (int)t.x1 << " " << (int)t.y1 << " " << (int)t.x2 << " " << (int)t.y2 << endl;
-	}
-	of.close();
+	optimizer.save("pat.txt", bts);
 }
 
 Mat renderTrajectory(Mat& iframe)

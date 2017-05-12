@@ -1,6 +1,7 @@
 #include "BRIEF.h"
 #include <math.h>
 #include <iostream>
+#include <fstream>
 #include "Profiler.h"
 using namespace std;
 namespace ty
@@ -75,6 +76,17 @@ namespace ty
 		}
 		return tests;
 	}
+
+	void Optimizer::save(string filename, std::vector<BRIEF::BinaryTest> tests)
+	{
+		fstream of(filename, ios::out);
+		for (auto t : tests)
+		{
+			of << (int)t.x1 << " " << (int)t.y1 << " " << (int)t.x2 << " " << (int)t.y2 << endl;
+		}
+		of.close();
+	}
+
 	void Optimizer::generateTests(int windowSize, int subWindowSize,int min_distance,int scale)
 	{
 		int padding = subWindowSize - 1;

@@ -76,12 +76,7 @@ void extract_patch(int argc, char** argv)
 	}
 	imshow("x", gr);
 	waitKey();
-	fstream of("directed.txt", ios::out);
-	for (auto t : result)
-	{
-		of << (int)t.x1 << " " << (int)t.y1 << " " << (int)t.x2 << " " << (int)t.y2 << endl;
-	}
-	of.close();
+	optimizer.save("test",result);
 }
 
 
@@ -210,7 +205,7 @@ int main(int argc,char** argv)
 		match_keypoints(string(argv[2]), string(argv[3]));
 		break;
 	case 'd':
-		directed_train(argc, argv);
+		extract_patch(argc, argv);
 	}
 	return 0;
 }
