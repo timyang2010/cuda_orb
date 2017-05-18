@@ -1,39 +1,10 @@
-#pragma once
 #include <opencv2/opencv.hpp>
-#include <opencv2/highgui.hpp>
+#include "Orb.h"
+#include <vector>
 #include "Profiler.h"
-#include "Memory.h"
-#include <fstream>
-#include "Application.h"
 using namespace cv;
 using namespace std;
 
-void BRIEF_Optimize(int argc, char** argv)
-{
-	Orb orb;
-	ty::Optimizer optimizer;
-	vector<Orb::Feature> features;
-	optimizer.generateTests(31,5,4);
-	for (int i=2;i<argc;++i)
-	{
-		cout << argv[i] << endl;
-		Mat m = imread(argv[i]);
-		Mat grey;
-		cvtColor(m, grey, CV_BGR2GRAY);
-		uchar** grey2d = convert2D(grey.data, grey.cols, grey.rows);
-		vector<ty::Keypoint> corners = orb.detectKeypoints(grey, 25, 12, 1500);
-		optimizer.extractFeatures(grey2d, corners);
-	}
-	auto bts = optimizer.Optimize();
-	Mat m = Mat::zeros(512, 512, CV_8UC1);
-	for (auto t : bts)
-	{
-		line(m, Point2f(t.x1 * 16 + 256, t.y1 * 16 + 256), Point2f(t.x2 * 16 + 256, t.y2 * 16 + 256), Scalar(255), 1, cv::LINE_AA);
-	}
-	imshow("result", m);
-	waitKey();
-	optimizer.save("pat.txt", bts);
-}
 
 Mat renderTrajectory(Mat& iframe)
 {
@@ -45,14 +16,14 @@ Mat renderTrajectory(Mat& iframe)
 	{
 		history.erase(history.begin());
 		for (int i = 0; i < hframe_count; ++i)
-		{
+		{ 
 			rframe += history[i] / (hframe_count - i);
 		}
 	}
 	return rframe;
 }
 
-vector<Orb::Feature> TrackKeypoints(Mat& frame, Orb& orb,int max_keypoints)
+vector<Orb::Feature> TrackKeypoints(Mat& frame, Orb& orb, int max_keypoints = 2000)
 {
 	Mat grey;
 	cvtColor(frame, grey, CV_BGR2GRAY);
@@ -60,20 +31,20 @@ vector<Orb::Feature> TrackKeypoints(Mat& frame, Orb& orb,int max_keypoints)
 	vector<Orb::Feature> features = orb.extractFeatures(grey, corners);
 	return features;
 }
-void TrackCamera(string arg)
+
+int main(int argc, char** argv)
 {
+	if (argc < 2)return 0;
 	Orb orb = Orb::fromFile("C:\\Users\\timya\\Desktop\\Orb\\x64\\Release\\pat.txt");
 	Profiler profiler;
 	VideoCapture cap;
 	Mat frame;
-	ty::Optimizer opt;
 	namedWindow("traj", WINDOW_NORMAL);
 	resizeWindow("traj", 1280, 720);
 	moveWindow("traj", 50, 50);
-
-	cap.open(arg);
+	cap.open(argv[1]);
 	if (!cap.isOpened())
-		return;
+		return -1;
 	vector<Orb::Feature> features_old;
 	for (int fc = 0; waitKey(1) == -1; ++fc)
 	{
@@ -89,10 +60,10 @@ void TrackCamera(string arg)
 			hs.InsertRange(features);
 			for (auto mp : hs.Hash_Match(features_old, 64))
 			{
-				if(pow(mp.first.x-mp.second.x,2)+pow(mp.first.y-mp.second.y,2)<10000)
-				line(tframe, mp.first, mp.second, Scalar(255, 255, 225), 1, cv::LineTypes::LINE_AA);
+				if (pow(mp.first.x - mp.second.x, 2) + pow(mp.first.y - mp.second.y, 2)<10000)
+					line(tframe, mp.first, mp.second, Scalar(255, 255, 225), 1, cv::LineTypes::LINE_AA);
 			}
-				
+
 		}
 		features_old = features;
 		imshow("traj", renderTrajectory(tframe));

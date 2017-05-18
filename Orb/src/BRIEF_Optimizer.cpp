@@ -19,9 +19,11 @@ namespace ty
 			candidate c = candidates[i];
 			for (int j = 0; j < positions.size(); ++j)
 			{
-				int ang = positions[j].z;
-				int x1 = positions[j].x + c.tests[ang].x1; int y1 = positions[j].y + c.tests[ang].y1;
-				int x2 = positions[j].x + c.tests[ang].x2; int y2 = positions[j].y + c.tests[ang].y2;
+				int ang = 0;
+				int x1 = positions[j].x + c.tests[ang].x1; 
+				int y1 = positions[j].y + c.tests[ang].y1;
+				int x2 = positions[j].x + c.tests[ang].x2; 
+				int y2 = positions[j].y + c.tests[ang].y2;
 				candidates[i].testResult.push_back(image[y1][x1] > image[y2][x2] ? 1 : 0);
 			}
 		}

@@ -39,7 +39,7 @@ std::vector<ty::Keypoint> Orb::detectKeypoints(cuArray<uchar>& ibuffer, cuArray<
 			uint cvalue = auxmat.data[x];
 			if (cvalue > 0)
 			{
-				corners.push_back({ (float)j,(float)i,0,0 });
+				corners.push_back(ty::Keypoint((float)j,(float)i));
 			}
 		}
 	}

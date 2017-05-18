@@ -1,17 +1,20 @@
-﻿
 #include <opencv2/opencv.hpp>
-#include <opencv2/highgui.hpp>
-#include <thread>
-#include "Profiler.h"
-#include "Memory.h"
 #include "Orb.h"
-#include <sstream>
-#include <fstream>
-#include "Application.h"
-#define _USE_MATH_DEFINES 
-#include <math.h>
+#include <vector>
 using namespace cv;
 using namespace std;
+
+#define _USE_MATH_DEFINES 
+#include <math.h>
+
+vector<Orb::Feature> TrackKeypoints(Mat& frame, Orb& orb, int max_keypoints = 2000)
+{
+	Mat grey;
+	cvtColor(frame, grey, CV_BGR2GRAY);
+	vector<ty::Keypoint> corners = orb.detectKeypoints(grey, 25, 12, max_keypoints);
+	vector<Orb::Feature> features = orb.extractFeatures(grey, corners);
+	return features;
+}
 
 Point2f _rotate(Point2f p, double deg, Point2f center)
 {
@@ -19,34 +22,6 @@ Point2f _rotate(Point2f p, double deg, Point2f center)
 	double _cos = cos(deg / 180 * M_PI);
 	double _sin = sin(deg / 180 * M_PI);
 	return Point2f(p.x*_cos - p.y*_sin, p.x*_sin + p.y*_cos) + center;
-}
-
-void match_keypoints(string n1, string n2)
-{
-	Orb orb = Orb::fromFile("pat.txt");
-	Mat m1 = imread(n1);
-	Mat m2 = imread(n2);
-	auto f1 = TrackKeypoints(m1, orb, 1000);
-	auto f2 = TrackKeypoints(m2, orb, 1000);
-	auto pairs = ty::MatchBF(f1, f2, 45);
-	Mat fr(max(m1.rows,m2.rows), m1.cols + m2.cols, m1.type());
-	m1.copyTo(fr(Rect2d(0, 0, m1.cols, m1.rows)));
-	m2.copyTo(fr(Rect2d(m1.cols, 0, m2.cols, m2.rows)));
-	for (auto f : f1)
-	{
-		circle(fr, f.position, 1, Scalar(12, 255, 128), 1, LINE_AA);
-	}
-	for (auto f : f2)
-	{
-		circle(fr, f.position + Point2f(m1.cols, 0), 1, Scalar(12, 255, 128), 1, LINE_AA);
-	}
-	int inlier = 0;
-	for (auto p : pairs)
-	{
-		line(fr, p.first, p.second + Point2f(m1.cols, 0), Scalar((1-(float)p.second.y / (float)m2.rows) * 255, ((float)p.second.y / (float)m2.rows) * 255, ((float)p.second.y / (float)m2.rows) * 255), 1, LINE_AA);
-	}
-	imshow("match", fr);
-	waitKey();
 }
 
 void extract_patch(int argc, char** argv)
@@ -60,15 +35,15 @@ void extract_patch(int argc, char** argv)
 		ss << i << ".jpg";
 		string p = path + ss.str();
 		cout << i << endl;
-		Mat patch = imread(path+ss.str(), CV_LOAD_IMAGE_GRAYSCALE);
+		Mat patch = imread(path + ss.str(), CV_LOAD_IMAGE_GRAYSCALE);
 		Mat normalized;
 		resize(patch, normalized, Size2f(31, 31));
-		ty::Keypoint k(16,16);
+		ty::Keypoint k(16, 16);
 		vector<ty::Keypoint> kps;
 		kps.push_back(k);
-		optimizer.extractFeatures(convert2D<uchar>(normalized.data, normalized.cols, normalized.rows),kps);
+		optimizer.extractFeatures(convert2D<uchar>(normalized.data, normalized.cols, normalized.rows), kps);
 	}
-	auto result = optimizer.Optimize(0.2,0.01);
+	auto result = optimizer.Optimize(0.2, 0.01);
 	Mat gr = Mat::zeros(512, 512, CV_8UC1);
 	for (int i = 0; i < 256; ++i)
 	{
@@ -76,13 +51,13 @@ void extract_patch(int argc, char** argv)
 	}
 	imshow("x", gr);
 	waitKey();
-	optimizer.save("test",result);
+	optimizer.save("test", result);
 }
 
 
-vector<float> rotate_test(string n1,Orb& orb,int max_distance)
+vector<float> rotate_test(string n1, Orb& orb, int max_distance)
 {
-	
+
 	Mat m1 = imread(n1);
 	vector<float> match_result;
 	for (int i = 0; i < 360; i += 3)
@@ -132,10 +107,10 @@ vector<float> vector_reduce_mean(vector<vector<float>>& v)
 	}
 	return tmp;
 }
-void experiment(int argc, char** argv)
+int main(int argc, char** argv)
 {
-	
-	Orb orb1 = Orb::fromFile("pat.txt");
+
+	Orb orb1 = Orb::fromFile("C:\\Users\\timya\\Desktop\\Orb\\x64\\Release\\pat.txt");
 	Orb orb2 = Orb();
 	Mat gr(512, 512, CV_8UC1);
 	Mat gr2(512, 512, CV_8UC1);
@@ -146,7 +121,7 @@ void experiment(int argc, char** argv)
 		line(gr2, Point2d(orb2[0][i].x1 * 6 + 256, orb2[0][i].y1 * 6 + 256), Point2d(orb2[0][i].x2 * 6 + 256, orb2[0][i].y2 * 6 + 256), Scalar(225), 1, LINE_AA);
 	}
 
-	imshow("orb1",gr);
+	imshow("orb1", gr);
 	imshow("orb2", gr2);
 	waitKey();
 
@@ -157,7 +132,7 @@ void experiment(int argc, char** argv)
 		vector<vector<float>> r1;
 		vector<vector<float>> r2;
 		vector<vector<float>> r3;
-		for (int i = 2; i < argc; ++i)
+		for (int i = 1; i < argc; ++i)
 		{
 			r1.push_back(rotate_test(argv[i], orb2, md));
 			r2.push_back(rotate_test(argv[i], orb2, md));
@@ -174,7 +149,7 @@ void experiment(int argc, char** argv)
 		}
 		cout << md << endl;
 	}
-	
+
 	ofstream f("log.txt");
 	for (int i = 0; i < crvector.size(); ++i)
 	{
@@ -185,27 +160,5 @@ void experiment(int argc, char** argv)
 		f << endl;
 	}
 	f.close();
-}
-
-
-int main(int argc,char** argv)
-{
-	switch (argv[1][0])
-	{
-	case 't':
-		BRIEF_Optimize(argc,argv);
-		break;
-	case 'c':
-		TrackCamera(string(argv[2]));
-		break;
-	case 'r':
-		experiment(argc, argv);
-		break;
-	case 'm':
-		match_keypoints(string(argv[2]), string(argv[3]));
-		break;
-	case 'd':
-		extract_patch(argc, argv);
-	}
 	return 0;
 }
