@@ -21,6 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{a04b9128-2482-4252-adc5-faf777de86a9}</ProjectGuid>
     <RootNamespace>Orb_Experiments</RootNamespace>
+    <ProjectName>Orb_Benchmark</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
