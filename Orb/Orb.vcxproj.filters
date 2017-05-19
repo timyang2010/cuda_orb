@@ -36,9 +36,6 @@
     <Filter Include="utility">
       <UniqueIdentifier>{fe02b567-fefe-4103-abfd-f726fd8c17ba}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include">
-      <UniqueIdentifier>{0fb4ec74-c35d-4fdf-adc3-57751e2a5589}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\rBRIEF.cpp">
