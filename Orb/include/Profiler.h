@@ -14,7 +14,9 @@ public:
 	void Log(std::string name);
 	void Message(std::string msg, float value);
 	void Report();
-
+	static Profiler global;
+	static void Enable();
+	static void Disable();
 protected:
 	int count;
 	std::chrono::time_point<std::chrono::steady_clock> time;
@@ -27,5 +29,6 @@ protected:
 		float value;
 		bool is_msg;
 	};
+	static bool enabled;
 	std::queue<record> logs;	
 };

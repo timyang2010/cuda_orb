@@ -23,18 +23,22 @@ Mat renderTrajectory(Mat& iframe)
 	return rframe;
 }
 
-vector<Orb::Feature> TrackKeypoints(Mat& frame, Orb& orb, int max_keypoints = 2000)
+vector<Orb::Feature> TrackKeypoints(Mat& frame, Orb& orb, int max_keypoints = 1000)
 {
 	Mat grey;
 	cvtColor(frame, grey, CV_BGR2GRAY);
 	vector<ty::Keypoint> corners = orb.detectKeypoints(grey, 25, 12, max_keypoints);
+	Profiler::global.Start();
 	vector<Orb::Feature> features = orb.extractFeatures(grey, corners);
+	Profiler::global.Log("BRIEF");
 	return features;
 }
 
 int main(int argc, char** argv)
 {
 	if (argc < 2)return 0;
+
+	Profiler::Enable();
 	Orb orb = Orb::fromFile("C:\\Users\\timya\\Desktop\\Orb\\x64\\Release\\pat.txt");
 	Profiler profiler;
 	VideoCapture cap;
@@ -54,18 +58,20 @@ int main(int argc, char** argv)
 		Mat grey;
 		cvtColor(frame, grey, CV_BGR2GRAY);
 		vector<Orb::Feature> features = TrackKeypoints(frame, orb);
+		
 		if (features_old.size() > 0)
 		{
-			ty::MultiLSHashTable hs;
-			hs.InsertRange(features);
-			for (auto mp : hs.Hash_Match(features_old, 64))
+			auto mps = ty::MatchBF(features, features_old, 35);
+			Profiler::global.Log("Matching");
+			for (auto mp : mps)
 			{
 				if (pow(mp.first.x - mp.second.x, 2) + pow(mp.first.y - mp.second.y, 2)<10000)
 					line(tframe, mp.first, mp.second, Scalar(255, 255, 225), 1, cv::LineTypes::LINE_AA);
 			}
 
 		}
+		Profiler::global.Report();
 		features_old = features;
-		imshow("traj", renderTrajectory(tframe));
+		imshow("traj", grey+renderTrajectory(tframe));
 	}
 }

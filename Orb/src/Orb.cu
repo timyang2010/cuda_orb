@@ -29,8 +29,10 @@ std::vector<ty::Keypoint> Orb::detectKeypoints(cuArray<uchar>& ibuffer, cuArray<
 {
 	std::vector<ty::Keypoint> corners;
 	cv::Mat auxmat = cv::Mat(width, height, CV_8UC1);
+	Profiler::global.Start();
 	FAST << < dim3(width / FAST_TILE, height / FAST_TILE), dim3(FAST_TILE, FAST_TILE) >> > (ibuffer, aux, thres, arc_length, width, height);
 	aux.download(auxmat.data);
+	Profiler::global.Log("Fast");
 	int x = padding + padding*width;
 	for (uint i = padding; i < height - padding; ++i,x += padding * 2)
 	{
@@ -43,18 +45,21 @@ std::vector<ty::Keypoint> Orb::detectKeypoints(cuArray<uchar>& ibuffer, cuArray<
 			}
 		}
 	}
-	if (limit>0)
-	{
-		AngleMap.upload(corners.data(), corners.size());
-		FAST_Refine << < corners.size() / 32, 32 >> >(ibuffer, AngleMap, corners.size(), width, height);
-		AngleMap.download(corners.data(), corners.size());
-		std::sort(corners.begin(), corners.end(), [](ty::Keypoint& c1, ty::Keypoint& c2) {
-			return c1.w > c2.w;
-		});
-		int minc = corners.size() >= limit ? limit : corners.size();
-		corners = std::vector<ty::Keypoint>(corners.begin(), corners.begin() + minc);
-	}
+	Profiler::global.Log("Reduction");
+
+	AngleMap.upload(corners.data(), corners.size());
+	FAST_Refine << < corners.size() / 32, 32 >> >(ibuffer, AngleMap, corners.size(), width, height);
+	AngleMap.download(corners.data(), corners.size());
+	Profiler::global.Log("NMS");
+	std::sort(corners.begin(), corners.end(), [](ty::Keypoint& c1, ty::Keypoint& c2) {
+		return c1.w > c2.w;
+	});
+	Profiler::global.Log("NMS-Sort");
+	int minc = corners.size() >= limit ? limit : corners.size();
+	corners = std::vector<ty::Keypoint>(corners.begin(), corners.begin() + minc);
+	
 	computeOrientation(ibuffer, corners, width, height);
+	Profiler::global.Log("Orientation");
 	return corners;
 }
 

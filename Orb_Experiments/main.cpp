@@ -110,42 +110,40 @@ vector<float> vector_reduce_mean(vector<vector<float>>& v)
 int main(int argc, char** argv)
 {
 
-	Orb orb1 = Orb::fromFile("C:\\Users\\timya\\Desktop\\Orb\\x64\\Release\\pat.txt");
-	Orb orb2 = Orb();
+	Orb orb1;
+	Orb orb2 = Orb::fromFile("C:\\Users\\timya\\Desktop\\Orb\\x64\\Release\\pat2.txt");
 	Mat gr(512, 512, CV_8UC1);
 	Mat gr2(512, 512, CV_8UC1);
 	for (int i = 0; i < 256; ++i)
 	{
 		cout << orb1[0][i] << endl;
-		line(gr, Point2d(orb1[0][i].x1 * 6 + 256, orb1[0][i].y1 * 6 + 256), Point2d(orb1[0][i].x2 * 6 + 256, orb1[0][i].y2 * 6 + 256), Scalar(225), 1, LINE_AA);
-		line(gr2, Point2d(orb2[0][i].x1 * 6 + 256, orb2[0][i].y1 * 6 + 256), Point2d(orb2[0][i].x2 * 6 + 256, orb2[0][i].y2 * 6 + 256), Scalar(225), 1, LINE_AA);
+		line(gr, Point2d(orb1[0][i].x1 * 16 + 256, orb1[0][i].y1 * 16 + 256), Point2d(orb1[0][i].x2 * 16 + 256, orb1[0][i].y2 * 16 + 256), Scalar(225), 1, LINE_AA);
+		line(gr2, Point2d(orb2[0][i].x1 * 16 + 256, orb2[0][i].y1 * 16 + 256), Point2d(orb2[0][i].x2 * 16 + 256, orb2[0][i].y2 * 16 + 256), Scalar(225), 1, LINE_AA);
 	}
 
 	imshow("orb1", gr);
 	imshow("orb2", gr2);
+	imwrite("orb1.jpg", gr);
+	imwrite("orb2.jpg", gr2);
 	waitKey();
 
 	vector<vector<float>> crvector(120);
 
-	for (int md = 35; md <= 50; md += 15)
+	for (int md = 35; md <= 36; md += 15)
 	{
 		vector<vector<float>> r1;
 		vector<vector<float>> r2;
-		vector<vector<float>> r3;
 		for (int i = 1; i < argc; ++i)
 		{
-			r1.push_back(rotate_test(argv[i], orb2, md));
+			r1.push_back(rotate_test(argv[i], orb1, md));
 			r2.push_back(rotate_test(argv[i], orb2, md));
-			r3.push_back(rotate_test(argv[i], orb1, md));
 		}
 		vector<float> v1 = vector_reduce_mean(r1);
 		vector<float> v2 = vector_reduce_mean(r2);
-		vector<float> v3 = vector_reduce_mean(r3);
 		for (int i = 0; i < 120; ++i)
 		{
 			crvector[i].push_back(v1[i]);
 			crvector[i].push_back(v2[i]);
-			crvector[i].push_back(v3[i]);
 		}
 		cout << md << endl;
 	}
