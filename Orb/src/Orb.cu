@@ -52,7 +52,7 @@ std::vector<ty::Keypoint> Orb::detectKeypoints(cuArray<uchar>& ibuffer, cuArray<
 	AngleMap.download(corners.data(), corners.size());
 	Profiler::global.Log("NMS");
 	std::sort(corners.begin(), corners.end(), [](ty::Keypoint& c1, ty::Keypoint& c2) {
-		return c1.w > c2.w;
+		return c1.w < c2.w;
 	});
 	Profiler::global.Log("NMS-Sort");
 	int minc = corners.size() >= limit ? limit : corners.size();

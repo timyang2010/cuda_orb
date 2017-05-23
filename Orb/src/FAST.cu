@@ -173,7 +173,7 @@ __global__ void ComputeOrientation(unsigned char* __restrict__ inputImage, ty::K
 
 	ang[tid] = atan2(sumy[tid] , sumx[tid]);	
 	if (inputImage[c] < inputImage[cc])ang[tid] += M_PI;
-	ang[tid] = ang[tid] / M_PI * 180;
-	cornerMap[idx].z = int((ang[tid] + 360) / 12) % 30;
+	ang[tid] = ang[tid] / M_PI * 180.0f;
+	cornerMap[idx].z = int(roundf((ang[tid] + 360) / 12)) % 30;
 
 }

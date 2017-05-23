@@ -29,12 +29,12 @@ namespace ty
 		int radius = dim / 2;
 		for (int i = 0; i < count; ++i)
 		{
-			tests.push_back({ 
+			tests.push_back(BinaryTest(
 				int8_t(rand() % dim - radius),
 				int8_t(rand() % dim - radius),
 				int8_t(rand() % dim - radius),
 				int8_t(rand() % dim - radius) 
-			});
+			));
 		}
 		return tests;
 	}
