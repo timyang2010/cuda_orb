@@ -37,7 +37,7 @@ vector<Orb::Feature> TrackKeypoints(Mat& frame, Orb& orb, int max_keypoints = 10
 int main(int argc, char** argv)
 {
 	if (argc < 2)return 0;
-
+	cudaSetDevice(1);
 	Profiler::Enable();
 	Orb orb = Orb::fromFile("C:\\Users\\timya\\Desktop\\Orb\\x64\\Release\\pat.txt");
 	Profiler profiler;
