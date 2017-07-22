@@ -68,7 +68,7 @@ vector<float> rotate_test(string n1, Orb& orb, int max_distance)
 		warpAffine(m1, rm2, rm, Size2d(m1.cols, m1.rows));
 		auto f1 = TrackKeypoints(m1, orb, 100000);
 		auto f2 = TrackKeypoints(rm2, orb, 100000);
-		auto pairs = ty::MatchBF(f1, f2, max_distance);
+		auto pairs = ty::BRIEF::matchFeatures(f1, f2, max_distance);
 		cout << f1.size() + f2.size() << endl;
 		Mat fr(m1.rows, m1.cols + m1.cols, m1.type());
 		m1.copyTo(fr(Rect2d(0, 0, m1.cols, m1.rows)));

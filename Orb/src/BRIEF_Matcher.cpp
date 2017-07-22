@@ -72,7 +72,7 @@ namespace ty
 		return minf;
 	}
 
-	std::vector< std::pair<cv::Point2f, cv::Point2f> > MultiLSHashTable::Hash_Match(std::vector<BRIEF::Feature>& fs, const int max_distance)
+	std::vector< std::pair<cv::Point2f, cv::Point2f> > MultiLSHashTable::hashMatch(std::vector<BRIEF::Feature>& fs, const int max_distance)
 	{
 		std::vector< std::pair<cv::Point2f, cv::Point2f> > mpairs;
 		for (auto t : fs)
@@ -91,7 +91,7 @@ namespace ty
 namespace ty
 {
 
-	vector< pair<Point2f, Point2f> > MatchBF(std::vector<BRIEF::Feature>& f1, std::vector<BRIEF::Feature>& f2, const int threshold)
+	vector< pair<Point2f, Point2f> > BRIEF::matchFeatures(std::vector<BRIEF::Feature>& f1, std::vector<BRIEF::Feature>& f2, const int threshold)
 	{
 		vector< pair<Point2f, Point2f> > result;
 		vector< int > rs(f1.size());

@@ -6,12 +6,24 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Orb", "Orb\Orb.vcxproj", "{FC79BEBD-DBA2-4A71-B943-68AAAA142441}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Orb_Benchmark", "Examples\Orb_Experiments\Orb_Experiments.vcxproj", "{A04B9128-2482-4252-ADC5-FAF777DE86A9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FC79BEBD-DBA2-4A71-B943-68AAAA142441} = {FC79BEBD-DBA2-4A71-B943-68AAAA142441}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Orb_Match", "Examples\Orb_Match\Orb_Match.vcxproj", "{8743A1B7-D2B4-4438-917A-3A1E0770BC9A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FC79BEBD-DBA2-4A71-B943-68AAAA142441} = {FC79BEBD-DBA2-4A71-B943-68AAAA142441}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Orb_Optimizer", "Examples\Orb_Optimizer\Orb_Optimizer.vcxproj", "{AD4B8CA4-AE82-49FD-84C7-A7141BEAC04C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FC79BEBD-DBA2-4A71-B943-68AAAA142441} = {FC79BEBD-DBA2-4A71-B943-68AAAA142441}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Orb_SLAM", "Examples\Orb_SLAM\Orb_SLAM.vcxproj", "{DC20DCEC-12B6-4B21-80F2-0C3B13797CE9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FC79BEBD-DBA2-4A71-B943-68AAAA142441} = {FC79BEBD-DBA2-4A71-B943-68AAAA142441}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{1A102731-1624-4E4C-BE10-295DAE76D1EC}"
 EndProject

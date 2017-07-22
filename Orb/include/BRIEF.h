@@ -4,6 +4,7 @@
 #include <opencv2/core.hpp>
 #include <vector>
 #include <immintrin.h>
+
 namespace ty
 {
 #define BRIEF_DEFAULT_WORDLENGTH 8
@@ -78,6 +79,8 @@ namespace ty
 			BinaryTest Rotate(double _cos, double _sin)  const;
 			friend std::ostream& operator<<(std::ostream& os, const BinaryTest& dt);
 		};
+		static std::vector< std::pair<cv::Point2f, cv::Point2f> > matchFeatures(std::vector<BRIEF::Feature>& f1, std::vector<BRIEF::Feature>& f2, int threshold = 30);
+		static std::vector< std::pair<cv::Point2f, cv::Point2f> > matchFeatures_gpu(std::vector<BRIEF::Feature>& f1, std::vector<BRIEF::Feature>& f2, int threshold = 30);
 
 	protected:
 		std::vector<BRIEF::BinaryTest> GenerateBinaryTests(const int count, const int dim);
@@ -106,7 +109,6 @@ namespace ty
 	};
 
 
-	std::vector< std::pair<cv::Point2f, cv::Point2f> > MatchBF(std::vector<BRIEF::Feature>& f1, std::vector<BRIEF::Feature>& f2, int threshold = 30);
 
 
 	//split all features into 256 bins
@@ -123,8 +125,6 @@ namespace ty
 		unsigned char bitmask;
 		std::vector<BRIEF::Feature> table[256];
 	};
-
-
 	class MultiLSHashTable
 	{
 	public:
@@ -136,7 +136,7 @@ namespace ty
 			}
 		}
 		void InsertRange(std::vector<BRIEF::Feature>& features);
-		std::vector< std::pair<cv::Point2f, cv::Point2f> > Hash_Match(std::vector<BRIEF::Feature>& fs, const int max_distance = 30);
+		std::vector< std::pair<cv::Point2f, cv::Point2f> > hashMatch(std::vector<BRIEF::Feature>& fs, const int max_distance = 30);
 	protected:
 		std::pair<int, BRIEF::Feature> Hash_Find(BRIEF::Feature& f, const int max_distance = 30);
 	private:
@@ -144,7 +144,7 @@ namespace ty
 	};
 
 
-	//encapsulate training and searching methods for rBRIEF test patterns
+	//encapsulate training and searching methods for rBRIEF tests
 	class Optimizer
 	{
 	public:

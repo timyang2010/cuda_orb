@@ -8,7 +8,7 @@ using namespace std;
 
 Mat renderTrajectory(Mat& iframe)
 {
-	const int hframe_count = 8;
+	const int hframe_count = 2;
 	static vector<Mat> history;
 	history.push_back(iframe);
 	Mat rframe(iframe.rows, iframe.cols, iframe.type());
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 	if (argc < 2)return 0;
 	cudaSetDevice(1);
 	Profiler::Enable();
-	Orb orb = Orb::fromFile("C:\\Users\\timya\\Desktop\\Orb\\x64\\Release\\pat.txt");
+	Orb orb = Orb::fromFile("C:\\Users\\timya\\Desktop\\Orb\\x64\\Release\\pat.txt",Orb::MODE_BRIEF);
 	Profiler profiler;
 	VideoCapture cap;
 	Mat frame;
@@ -52,23 +52,23 @@ int main(int argc, char** argv)
 	vector<Orb::Feature> features_old;
 	for (int fc = 0; waitKey(1) == -1; ++fc)
 	{
-		if (fc % 2 == 0)continue;
+		//if (fc % 2 == 0)continue;
 		if (!cap.read(frame))break;
 		Mat tframe(frame.rows, frame.cols, CV_8UC1);
 		Mat grey;
 		cvtColor(frame, grey, CV_BGR2GRAY);
-		vector<Orb::Feature> features = TrackKeypoints(frame, orb);
+		vector<Orb::Feature> features = TrackKeypoints(frame, orb,1000);
 		
 		if (features_old.size() > 0)
 		{
-			auto mps = ty::MatchBF(features, features_old, 35);
+			auto mps = ty::BRIEF::matchFeatures(features, features_old, 35);
 			Profiler::global.Log("Matching");
 			for (auto mp : mps)
 			{
-				if (pow(mp.first.x - mp.second.x, 2) + pow(mp.first.y - mp.second.y, 2)<10000)
-					line(tframe, mp.first, mp.second, Scalar(255, 255, 225), 1, cv::LineTypes::LINE_AA);
+				int L2 = pow(mp.first.x - mp.second.x, 2) + pow(mp.first.y - mp.second.y, 2);
+				if (L2 < 10000)
+					line(tframe, mp.first, mp.second, Scalar(255, 255, 255), 1, cv::LineTypes::LINE_AA);
 			}
-
 		}
 		Profiler::global.Report();
 		features_old = features;
