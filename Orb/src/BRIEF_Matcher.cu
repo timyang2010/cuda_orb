@@ -2,7 +2,7 @@
 #include "device_launch_parameters.h"
 #include <device_functions.h>
 #define BLOCKDIM 16
-#define MAX_FEATURE_CNT 1024
+#define MAX_FEATURE_CNT 2048
 #define FEATURE_LENGTH 8
 using namespace ty;
 __global__ void bf_hamming_dist(unsigned char * d_map, unsigned int* xfeatures, unsigned int* yfeatures)
@@ -34,17 +34,18 @@ __global__ void bf_hamming_dist(unsigned char * d_map, unsigned int* xfeatures, 
 	d_map[g] = dist;
 }
 
+#define REDUCTION_BLOCKDIM MAX_FEATURE_CNT/32
 //apply merge sort on rows
 __global__ void reduce_argmin(unsigned char* d_map,unsigned int* d_min,int max_x, int threshold)
 {
 	//1024 1-d blocks, 32 thread per block
 	unsigned char *arr = d_map + blockIdx.x*MAX_FEATURE_CNT;
-	__shared__ unsigned char buffer[1024];
-	__shared__ unsigned int min_dist[32];
-	__shared__ unsigned int min_idx[32];
+	__shared__ unsigned char buffer[MAX_FEATURE_CNT];
+	__shared__ unsigned int min_dist[REDUCTION_BLOCKDIM];
+	__shared__ unsigned int min_idx[REDUCTION_BLOCKDIM];
 
 	min_dist[threadIdx.x] = 255;
-	for (int i = 0; i < MAX_FEATURE_CNT; i+=32)
+	for (int i = 0; i < MAX_FEATURE_CNT; i+= REDUCTION_BLOCKDIM)
 	{
 		buffer[threadIdx.x + i] = arr[threadIdx.x + i];
 	}
@@ -65,7 +66,7 @@ __global__ void reduce_argmin(unsigned char* d_map,unsigned int* d_min,int max_x
 	{
 		unsigned int local_min_dist = 255;
 		unsigned int local_min_idx = 0;
-		for (int i = 0; i < 32; ++i)
+		for (int i = 0; i < REDUCTION_BLOCKDIM; ++i)
 		{
 			if (local_min_dist > min_dist[i])
 			{
@@ -112,7 +113,7 @@ std::vector< std::pair<cv::Point2f, cv::Point2f> > BRIEF::matchFeatures_gpu(std:
 	cudaMemcpy(y, y_host, MAX_FEATURE_CNT * sizeof(unsigned int)*FEATURE_LENGTH, cudaMemcpyHostToDevice);
 
 	bf_hamming_dist << <dim3(MAX_FEATURE_CNT / BLOCKDIM, MAX_FEATURE_CNT / BLOCKDIM), dim3(BLOCKDIM, BLOCKDIM) >> > (dmap, x, y);
-	reduce_argmin << <dim3(f2.size()), dim3(32) >> > (dmap, dmin, f1.size(), threshold);
+	reduce_argmin << <dim3(f2.size()), dim3(REDUCTION_BLOCKDIM) >> > (dmap, dmin, f1.size(), threshold);
 	cudaMemcpy(dmin_host, dmin, MAX_FEATURE_CNT * sizeof(unsigned int), cudaMemcpyDeviceToHost);
 	/*cudaMemcpy(rm.data, dmap, MAX_FEATURE_CNT*MAX_FEATURE_CNT * sizeof(unsigned char), cudaMemcpyDeviceToHost);
 	cv::imshow("rn", rm);*/

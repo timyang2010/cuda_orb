@@ -19,9 +19,9 @@ int main(int argc, char** argv)
 	if (argc < 3)return -1;
 	Mat m1 = imread(argv[1]);
 	Mat m2 = imread(argv[2]);
-	auto f1 = TrackKeypoints(m1, orb, 1000);
-	auto f2 = TrackKeypoints(m2, orb, 1000);
-	auto pairs = ty::BRIEF::matchFeatures(f1, f2, 45);
+	auto f1 = TrackKeypoints(m1, orb, 1024);
+	auto f2 = TrackKeypoints(m2, orb, 1024);
+	auto pairs = ty::BRIEF::matchFeatures_gpu(f1, f2, 1);
 	Mat fr(max(m1.rows, m2.rows), m1.cols + m2.cols, m1.type());
 	m1.copyTo(fr(Rect2d(0, 0, m1.cols, m1.rows)));
 	m2.copyTo(fr(Rect2d(m1.cols, 0, m2.cols, m2.rows)));
