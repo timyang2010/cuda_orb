@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CudaCompile Include="src\FAST.cu">
-      <Filter>Fast</Filter>
-    </CudaCompile>
     <CudaCompile Include="src\Orb.cu">
       <Filter>Orb</Filter>
     </CudaCompile>
     <CudaCompile Include="src\BRIEF_Matcher.cu" />
+    <CudaCompile Include="src\kernels.cu">
+      <Filter>Fast</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BRIEF.h" />

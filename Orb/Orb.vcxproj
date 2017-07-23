@@ -180,7 +180,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <CudaCompile Include="src\BRIEF_Matcher.cu" />
-    <CudaCompile Include="src\FAST.cu" />
+    <CudaCompile Include="src\kernels.cu" />
     <CudaCompile Include="src\Orb.cu" />
   </ItemGroup>
   <ItemGroup>
