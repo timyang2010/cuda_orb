@@ -115,8 +115,8 @@ std::vector< std::pair<cv::Point2f, cv::Point2f> > BRIEF::matchFeatures_gpu(std:
 	bf_hamming_dist << <dim3(MAX_FEATURE_CNT / BLOCKDIM, MAX_FEATURE_CNT / BLOCKDIM), dim3(BLOCKDIM, BLOCKDIM) >> > (dmap, x, y);
 	reduce_argmin << <dim3(f2.size()), dim3(REDUCTION_BLOCKDIM) >> > (dmap, dmin, f1.size(), threshold);
 	cudaMemcpy(dmin_host, dmin, MAX_FEATURE_CNT * sizeof(unsigned int), cudaMemcpyDeviceToHost);
-	/*cudaMemcpy(rm.data, dmap, MAX_FEATURE_CNT*MAX_FEATURE_CNT * sizeof(unsigned char), cudaMemcpyDeviceToHost);
-	cv::imshow("rn", rm);*/
+	//cudaMemcpy(rm.data, dmap, MAX_FEATURE_CNT*MAX_FEATURE_CNT * sizeof(unsigned char), cudaMemcpyDeviceToHost);
+	//cv::imshow("rn", rm);
 	#pragma omp parallel for
 	for (int j = 0; j < f2.size(); ++j)
 	{
