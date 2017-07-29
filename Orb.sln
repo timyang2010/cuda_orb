@@ -32,6 +32,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Orb_Depth", "Examples\Orb_D
 		{FC79BEBD-DBA2-4A71-B943-68AAAA142441} = {FC79BEBD-DBA2-4A71-B943-68AAAA142441}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6896BECF-70EE-4F29-B120-116CBB6C2EDB}"
+	ProjectSection(SolutionItems) = preProject
+		readme.md = readme.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
