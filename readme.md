@@ -11,7 +11,7 @@ Partially CUDA implementation for ORB (Oriented FAST and Rotated BRIEF) feature 
 
 #### Usage
 * See example projects
-* API usage
+
 ```cpp
 #include "Orb.h"
 #include <opencv2/opencv.hpp>
